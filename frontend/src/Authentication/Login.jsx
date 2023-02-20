@@ -2,9 +2,13 @@ import React from "react";
 import { MdEmail } from "react-icons/md";
 import classes from "./login.module.css";
 import { useFormik } from "formik";
+import { useNavigate } from "react-router-dom";
+
 import * as yup from "yup";
 import { RiLockPasswordFill } from "react-icons/ri";
 const Login = () => {
+  const navigate = useNavigate();
+
   const { handleSubmit, getFieldProps, touched, errors } = useFormik({
     initialValues: {
       email: "",
@@ -27,6 +31,9 @@ const Login = () => {
         email: values.email,
         password: values.password,
       });
+      navigate("/");
+
+      localStorage.setItem("User", JSON.stringify(values));
     },
   });
   return (
