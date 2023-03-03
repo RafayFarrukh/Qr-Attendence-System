@@ -4,7 +4,7 @@ import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 const UserMenu = () => {
-  const _User = localStorage.getItem("User");
+  const _User = localStorage.getItem("Teacher");
   const User = JSON.parse(_User);
   const [anchorEl, setAnchorEl] = useState(null);
   const isOpen = Boolean(anchorEl);
@@ -47,9 +47,10 @@ const UserMenu = () => {
           <MenuItem id="basic-menu" onClick={handleClose}>
             <li className="flex">
               <Link
-                to="/login"
+                to="/home"
                 onClick={() => {
-                  localStorage.removeItem("User");
+                  localStorage.removeItem("Teacher");
+                  localStorage.removeItem("Token");
                 }}
                 className=" flex font-medium text-sm text-indigo-500 hover:text-indigo-600 flex items-center py-1 px-3"
               >

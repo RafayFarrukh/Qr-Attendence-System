@@ -14,10 +14,12 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const { handleSubmit, getFieldProps, touched, errors } = useFormik({
     initialValues: {
+      fullName: "",
       email: "",
       password: "",
     },
     validationSchema: yup.object({
+      fullName: yup.string().required("E-mail is Required!"),
       email: yup
         .string()
         .required("E-mail is Required!")
@@ -32,23 +34,21 @@ const Login = () => {
     onSubmit: (values) => {
       setLoading(true);
       axios
-        .post("/api/auth/teacher/login", {
+        .post("/api/auth/teacher/register", {
+          fullName: values.fullName,
           email: values.email,
           password: values.password,
         })
         .then((resp) => {
-          navigate("/");
+          navigate("/login");
           console.log(resp);
           if (resp.data.success == false) {
             console.log(resp.data.message);
           }
-          toast.success("Successfully Logged in", {
+          toast.success("Successfully Signedup", {
             position: toast.POSITION.TOP_RIGHT,
             autoClose: 1500,
           });
-          localStorage.setItem("Token", resp.data.token);
-
-          localStorage.setItem("Teacher", JSON.stringify(resp.data.teacher));
         })
         .catch((res) => {
           console.log(res);
@@ -75,9 +75,26 @@ const Login = () => {
           <div className="w-full md:w-96 md:max-w-full mx-auto shadow-lg">
             <div className="p-6  border-gray-300 sm:rounded-md">
               <h1 className="text-center font-semibold text-3xl lg:text-4xl text-gray-800 mb-12 mr-20">
-                Login
+                SignUp
               </h1>
               <form action="submit" onSubmit={handleSubmit}>
+                <label className="block mb-2">
+                  <span className="text-gray-800  ml-2 mt-8 font-bold flex items-center gap-x-3">
+                    <MdEmail />
+                    FullName
+                  </span>
+                  <input
+                    name="fullName"
+                    {...getFieldProps("fullName")}
+                    type="text"
+                    className={classes.inputsignup}
+                    placeholder="name"
+                    required
+                  />
+                </label>
+                {touched.fullName && errors.fullName ? (
+                  <small>{errors.fullName}</small>
+                ) : null}
                 <label className="block mb-2">
                   <span className="text-gray-800  ml-2 mt-8 font-bold flex items-center gap-x-3">
                     <MdEmail />
@@ -137,7 +154,7 @@ const Login = () => {
                         width={30}
                       />
                     ) : (
-                      "Log in"
+                      "Sign Up"
                     )}
                   </button>
                 </div>
