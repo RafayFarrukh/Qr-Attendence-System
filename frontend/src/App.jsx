@@ -14,11 +14,11 @@ function App() {
   const user = localStorage.getItem("Teacher");
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
-  // React.useEffect(() => {
-  //   if (!user) {
-  //     navigate("/login");
-  //   }
-  // }, []);
+  React.useEffect(() => {
+    if (!user) {
+      navigate("/home");
+    }
+  }, []);
   return (
     <>
       <div className="flex h-screen overflow-hidden">
