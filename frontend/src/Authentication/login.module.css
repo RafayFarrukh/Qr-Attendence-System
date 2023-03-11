@@ -178,14 +178,6 @@ small {
   float: left !important;
 }
 @media screen and (max-width: 480px) {
-  .money {
-    font-size: 30px;
-  }
-
-  .incexpcontainer {
-    width: 100%;
-    margin-top: 30px;
-  }
   .form {
     width: 200%;
     margin-left: 30px;
@@ -194,12 +186,7 @@ small {
     white-space: pre;
     margin-right: 100px;
   }
-  .report {
-    white-space: pre;
-    width: 95%;
-    border-radius: 10px;
-    margin-left: 30px;
-  }
+
   .FormContainer {
     width: 125%;
   }
@@ -214,14 +201,6 @@ small {
 }
 
 @media screen and (max-width: 930px) {
-  .money {
-    font-size: 30px;
-  }
-
-  .incexpcontainer {
-    width: 100%;
-    margin-top: 30px;
-  }
   .form {
     width: 200%;
     margin-left: 30px;
@@ -230,12 +209,7 @@ small {
     white-space: pre;
     margin-right: 100px;
   }
-  .report {
-    white-space: pre;
-    width: 95%;
-    border-radius: 10px;
-    margin-left: 30px;
-  }
+
   .FormContainer {
     width: 125%;
   }
@@ -250,14 +224,6 @@ small {
   }
 }
 @media screen and (max-width: 360px) {
-  .money {
-    font-size: 25px;
-  }
-
-  .incexpcontainer {
-    width: 90%;
-    margin-top: 30px;
-  }
   .form {
     width: 70%;
     margin-left: 20px;
@@ -266,12 +232,7 @@ small {
     white-space: pre;
     margin-right: 100px;
   }
-  .report {
-    white-space: pre;
-    width: 75%;
-    border-radius: 10px;
-    margin-left: 30px;
-  }
+
   .FormContainer {
     width: 125%;
   }

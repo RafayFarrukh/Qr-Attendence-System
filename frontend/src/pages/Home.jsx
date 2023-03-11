@@ -1,12 +1,14 @@
 import React from "react";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { Link } from "react-router-dom";
+import Navbar from "./Navbar";
 
 const Home = () => {
   return (
     <>
       <header>
-        <nav class="bg-white border-gray-200 px-4 lg:px-6 py-2.5 dark:bg-gray-800">
+        <Navbar />
+        {/* <nav class="bg-white border-gray-200 px-4 lg:px-6 py-2.5 dark:bg-gray-800">
           <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
             <a href="https://flowbite.com" class="flex items-center">
               <img
@@ -33,7 +35,7 @@ const Home = () => {
               </Link>
             </div>
           </div>
-        </nav>
+        </nav> */}
       </header>
 
       <section class="bg-white dark:bg-gray-900">

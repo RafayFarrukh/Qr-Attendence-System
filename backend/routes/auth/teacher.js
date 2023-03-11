@@ -3,7 +3,6 @@ var router = express.Router();
 const Teacher = require("../../models/Teacher");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const config = require("config");
 
 router.post("/register", async function (req, res, next) {
   const { fullName, email, password } = req.body;
@@ -63,7 +62,7 @@ router.post("/login", async function (req, res, next) {
 
         email: teacher.email,
       },
-      config.get("jwtPrivateKey")
+      "12bob12ou2b1ob"
     );
     const { _id, fullName, email } = teacher;
 
