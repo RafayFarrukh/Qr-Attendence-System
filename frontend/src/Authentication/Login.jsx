@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import LockIcon from "@mui/icons-material/Lock";
 import EmailIcon from "@mui/icons-material/Email";
 import classes from "./login.module.css";
@@ -12,6 +12,7 @@ import BaseURL from "../services/BaseURL";
 import * as Yup from "yup";
 import Header from "../pages/Header";
 import Navbar from "../pages/Navbar";
+import { UserContext } from "../App";
 const validationSchema = Yup.object().shape({
   email: Yup.string().required("E-mail is Required!").email("E-mail Invalid"),
   password: Yup.string()
@@ -23,7 +24,7 @@ const validationSchema = Yup.object().shape({
 const Login = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-
+  const { state, dispatch } = useContext(UserContext);
   return (
     <>
       <Navbar />
@@ -48,6 +49,8 @@ const Login = () => {
                 "Teacher",
                 JSON.stringify(resp.data.teacher)
               );
+              dispatch({ type: "USER", payload: resp.data.teacher });
+              dispatch({ type: "FETCH_TOKEN", payload: resp.data.token });
               navigate("/");
               toast.success("Successfully Logged in", {
                 position: toast.POSITION.TOP_RIGHT,

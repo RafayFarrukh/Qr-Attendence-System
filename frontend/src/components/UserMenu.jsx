@@ -1,8 +1,9 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import { UserContext } from "../App";
 const UserMenu = () => {
   const _User = localStorage.getItem("Teacher");
   const User = JSON.parse(_User);
@@ -10,7 +11,7 @@ const UserMenu = () => {
   const isOpen = Boolean(anchorEl);
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
-
+  const { dispatch } = useContext(UserContext);
   return (
     <div className="relative inline-flex">
       <div>
@@ -49,6 +50,7 @@ const UserMenu = () => {
               <Link
                 to="/home"
                 onClick={() => {
+                  dispatch({ type: "CLEAR" });
                   localStorage.removeItem("Teacher");
                   localStorage.removeItem("Token");
                 }}
