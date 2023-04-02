@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useReducer } from "react";
+import React, { createContext, useEffect, useReducer, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import Login from "./Authentication/Login";
 import Signup from "./Authentication/Signup";
@@ -10,10 +10,14 @@ import Home from "./pages/Home";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "./components/Sidebar/Sidebar";
 import { reducer, initialState } from "./reducers/userReducer";
+import AllCourses from "./components/Courses/AllCourses";
+import OneCourse from "./components/Courses/OneCourse";
+import TakeAttendance from "./components/Attendance/TakeAttendance";
 export const UserContext = createContext();
 function App() {
   const navigate = useNavigate();
   const user = localStorage.getItem("Teacher");
+  const [qrText, setQrText] = useState("");
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const [state, dispatch] = useReducer(reducer, initialState);
   useEffect(() => {
@@ -56,6 +60,9 @@ function App() {
             )}
             <Routes>
               <Route path="/home" element={<Home />} />
+              <Route path="/allcourses" element={<AllCourses />} />
+              <Route path="/onecourse/:id" element={<OneCourse />} />
+              <Route path="/takeAttendance" element={<TakeAttendance  setQrText={setQrText} qrText={qrText}/>} />
               <Route exact path="/login" element={<Login />} />
               <Route exact path="/signup" element={<Signup />} />
               <Route exact path="/" element={<Landing />} />

@@ -3,6 +3,7 @@ const dbConnect = require("./db/db-connect.js");
 const teacherAuth = require("./routes/auth/teacher");
 const studentAuth = require("./routes/auth/student");
 const course = require("./routes/course/course");
+const attendance = require("./routes/attendance/attendance");
 const StudentClass = require("./routes/class/class");
 const cors = require("cors");
 const apiauth = require("./middleware/apiAuth.js");
@@ -19,6 +20,7 @@ app.use("/api/auth/student", studentAuth);
 app.use("/api/course/teacher", apiauth, course);
 //class
 app.use("/api/class/teacher", apiauth, StudentClass);
+app.use("/api/class/teacher/attendance",apiauth, attendance);
 
 app.get("/", (req, res) => {
   res.send("welcome to backend of Qr code");

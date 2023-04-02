@@ -53,4 +53,36 @@ router.post("/addClass", async function (req, res, next) {
     });
   }
 });
+router.post("/addStudents/:id", async function (req, res, next) {
+  try {
+     const teacher = req.user;
+    const id = req.params.id;
+      if (teacher.admin) {
+    const classInfo = await Class.findById(id).exec();
+    console.log(classInfo)
+    const studentsArray = classInfo.students;
+    console.log(studentsArray)
+    const { username } = req.body;
+    const students = await Student.find({
+      email: { $regex: username, $options: "i" },
+    });
+    students.forEach((student) => {
+      studentsArray.push(student._id);
+      // student.students.push(new Date().toISOString());
+      student.save();
+    });
+    console.log(classInfo);
+    await classInfo.save();
+    res.status(200).json({
+      message: "Students successfully added",
+      classInfo,
+    });
+  } 
+ else {
+      res.status(401).json({
+        message: "You are not Authorized for this action",
+      });
+    }
+  } catch (error) {}
+});
 module.exports = router;
