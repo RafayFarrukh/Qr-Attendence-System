@@ -1,3 +1,9 @@
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
 h1 {
   letter-spacing: 1px;
   margin: 0;
@@ -17,10 +23,60 @@ h4 {
   font-weight: bold;
 }
 
-input[type="text"],
-input[type="number"],
-input[type="date"],
-select[name="category"] {
+.incexpcontainer {
+  background-color: #fff;
+  box-shadow: var(--box-shadow);
+  padding: 10px;
+  display: flex;
+  justify-content: space-around;
+  margin-top: 50px;
+  width: 40%;
+  gap: 10px;
+  font-size: 20px;
+  border: 1px solid rgb(229, 229, 229);
+  border-radius: 10px;
+  box-shadow: 0px 10px 10px 0px rgb(217, 217, 217);
+
+  /* margin: 10px 0; */
+}
+
+.inc-exp-container > div {
+  flex: 1;
+  text-align: center;
+}
+
+.inc-exp-container > div:first-of-type {
+  border-right: 1px solid #dedede;
+}
+
+.money {
+  font-weight: bold;
+
+  font-size: 50px;
+  letter-spacing: 1px;
+  margin: 5px 0;
+}
+
+.moneyplus {
+  color: #2ecc71;
+  font-size: 20px;
+  letter-spacing: 1px;
+  margin: 5px 0;
+}
+
+.moneyminus {
+  font-size: 20px;
+  letter-spacing: 1px;
+  margin: 5px 0;
+  color: #c0392b;
+}
+.plusminus {
+  flex-direction: row;
+}
+input[type='text'],
+input[type='number'],
+input[type='date'],
+select[name='category'] {
   font-family: inherit;
   border: 1px solid #dedede;
   border-radius: 10px;
@@ -94,7 +150,7 @@ select[name="category"] {
 .delete-btn:before,
 .delete-btn:after {
   position: absolute;
-  content: "";
+  content: '';
   left: 15px;
   background-color: #333;
 }
@@ -136,7 +192,27 @@ select[name="category"] {
   display: flex;
   justify-content: center;
 }
-
+.Income {
+  border-right: 1px solid rgb(210, 210, 210);
+  width: 100%;
+  text-align: center;
+}
+.Expense {
+  width: 100%;
+  text-align: center;
+}
+.report {
+  cursor: pointer;
+  background-color: #9c88ff;
+  box-shadow: var(--box-shadow);
+  color: #fff;
+  /* border: 0; */
+  display: block;
+  font-size: 16px;
+  /* margin: 10px 0 30px; */
+  padding: 10px;
+  width: 45%;
+}
 .date {
   margin-left: 120px;
   display: flex;
@@ -153,20 +229,20 @@ small {
   margin-bottom: 15px;
 
   /* margin-bottom: 10px;
-      margin-top: 10px; */
+    margin-top: 10px; */
 }
 .inputsignup {
   width: 100% !important;
   display: block;
-  /* padding: 10px; */
-  /* border: rgb(149, 41, 41); */
+  padding: 10px;
+  border: rgb(149, 41, 41);
 
   padding: 12px 20px;
   margin: 8px 0;
-  /* display: inline-block; */
+  display: inline-block;
   border: 1px solid rgb(219, 219, 219);
   border-radius: 8px;
-  /* box-sizing: border-box; */
+  box-sizing: border-box;
 }
 .errormsg {
   font-size: 12px;
@@ -178,6 +254,14 @@ small {
   float: left !important;
 }
 @media screen and (max-width: 480px) {
+  .money {
+    font-size: 30px;
+  }
+
+  .incexpcontainer {
+    width: 100%;
+    margin-top: 30px;
+  }
   .form {
     width: 200%;
     margin-left: 30px;
@@ -186,7 +270,12 @@ small {
     white-space: pre;
     margin-right: 100px;
   }
-
+  .report {
+    white-space: pre;
+    width: 95%;
+    border-radius: 10px;
+    margin-left: 30px;
+  }
   .FormContainer {
     width: 125%;
   }
@@ -201,6 +290,14 @@ small {
 }
 
 @media screen and (max-width: 930px) {
+  .money {
+    font-size: 30px;
+  }
+
+  .incexpcontainer {
+    width: 100%;
+    margin-top: 30px;
+  }
   .form {
     width: 200%;
     margin-left: 30px;
@@ -209,7 +306,12 @@ small {
     white-space: pre;
     margin-right: 100px;
   }
-
+  .report {
+    white-space: pre;
+    width: 95%;
+    border-radius: 10px;
+    margin-left: 30px;
+  }
   .FormContainer {
     width: 125%;
   }
@@ -224,6 +326,14 @@ small {
   }
 }
 @media screen and (max-width: 360px) {
+  .money {
+    font-size: 25px;
+  }
+
+  .incexpcontainer {
+    width: 90%;
+    margin-top: 30px;
+  }
   .form {
     width: 70%;
     margin-left: 20px;
@@ -232,7 +342,12 @@ small {
     white-space: pre;
     margin-right: 100px;
   }
-
+  .report {
+    white-space: pre;
+    width: 75%;
+    border-radius: 10px;
+    margin-left: 30px;
+  }
   .FormContainer {
     width: 125%;
   }

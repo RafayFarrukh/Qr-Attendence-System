@@ -18,9 +18,9 @@ const TakeAttendance = ({ setQrText, qrText }, props) => {
   }, []);
   const submit = async (e) => {
     e.preventDefault();
-    e.target.reset();
+    // e.target.reset();
     const timestamp = Date.now();
-    const teacherId = state.user._id;
+    const teacherId = state?.user?._id;
     const classId = "6429ba11cdf45c96f2841cb1";
     const data1 = { classId, teacherId, timestamp };
     const data = JSON.stringify(data1);
@@ -62,18 +62,18 @@ const TakeAttendance = ({ setQrText, qrText }, props) => {
                     onChange={(e) => setText(e.target.value)}
                     required
                   />
-                  <label htmlFor="Class">Enter Class Name</label>
+                  {/* <label htmlFor="Class">Enter Class Name</label>
                   <input
                     name="Class"
                     type="text"
                     placeholder="input"
                     onChange={(e) => setClassName(e.target.value)}
                     required
-                  />
+                  /> */}
 
                   <button
                     type="submit"
-                    // onClick={submit}
+                    onClick={submit}
                     className="
             h-10
 			mt-5
