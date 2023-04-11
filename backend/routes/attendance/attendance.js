@@ -132,4 +132,42 @@ router.get(
     }
   },
 );
+
+router.get('/attendance/:classId', async function (req, res, next) {
+  try {
+    const classId = req.params.classId;
+    const date = req.body.date;
+
+    // Find the class by ID
+    const classInfo = await Class.findById(classId).exec();
+    // Make sure the class exists
+    if (!classInfo) {
+      return res.status(404).json({ message: 'Class not found' });
+    }
+
+    // Find the attendance records for the class on the given date
+    const attendance = await Attendance.find({
+      ClassId: classInfo._id,
+      date: date,
+    });
+
+    if (!attendance || attendance.length === 0) {
+      return res.status(404).json({
+        message: 'Attendance not found for the class on the given date',
+        success: false,
+      });
+    }
+
+    return res.status(200).json({
+      message: 'Attendance found successfully',
+      attendance,
+      success: true,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
 module.exports = router;

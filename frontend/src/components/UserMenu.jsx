@@ -53,6 +53,7 @@ const UserMenu = () => {
                   dispatch({ type: "CLEAR" });
                   localStorage.removeItem("Teacher");
                   localStorage.removeItem("Token");
+                  window.location.reload()
                 }}
                 className=" flex font-medium text-sm text-indigo-500 hover:text-indigo-600 flex items-center py-1 px-3"
               >

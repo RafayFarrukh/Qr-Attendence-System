@@ -7,6 +7,7 @@ import QRCode from "react-qr-code";
 import { useLocation,useParams  } from "react-router-dom";
 
 const TakeAttendance = ({ setQrText, qrText }, props) => {
+    const [students, setStudents] = useState([]);
     const classId  = props;
     const { state } = useContext(UserContext);
 
@@ -21,7 +22,7 @@ const TakeAttendance = ({ setQrText, qrText }, props) => {
     // e.target.reset();
     const timestamp = Date.now();
     const teacherId = state?.user?._id;
-    const classId = "6429ba11cdf45c96f2841cb1";
+    const classId = state?.classId;
     const data1 = { classId, teacherId, timestamp };
     const data = JSON.stringify(data1);
     // setQrText(`Author: ${User.fullName}, Text: ${text}`);
@@ -48,33 +49,25 @@ const TakeAttendance = ({ setQrText, qrText }, props) => {
     // ---
   };
   return (
-    <>
-        <div className="mt-9">
-          <div className="bg-white dark:text-gray-200 dark:bg-secondary-dark-bg h-44 rounded-xl w-full lg:w-80 p-8 pt-9 m-3 bg-hero-pattern bg-no-repeat bg-cover bg-center">
-            <div className="flex ">
-              <div className="app">
-                <form action="" onSubmit={submit}>
-                  <label htmlFor="text">Enter Text</label>
-                  <input
+  <>
+      <div className="mt-9">
+        <div className="bg-white dark:text-gray-200 dark:bg-secondary-dark-bg h-44 rounded-xl w-full lg:w-80 p-8 pt-9 m-3 bg-hero-pattern bg-no-repeat bg-cover bg-center">
+          <div className="flex ">
+            <div className="app">
+              <form action="" onSubmit={submit}>
+                <label htmlFor="classId" className="bold">Enter Description</label>
+                         <input
                     name="text"
                     type="text"
                     placeholder="input"
                     onChange={(e) => setText(e.target.value)}
                     required
                   />
-                  {/* <label htmlFor="Class">Enter Class Name</label>
-                  <input
-                    name="Class"
-                    type="text"
-                    placeholder="input"
-                    onChange={(e) => setClassName(e.target.value)}
-                    required
-                  /> */}
 
-                  <button
-                    type="submit"
-                    onClick={submit}
-                    className="
+                <button
+                  type="submit"
+                  onClick={submit}
+                  className="
             h-10
 			mt-5
             px-5
@@ -87,18 +80,50 @@ const TakeAttendance = ({ setQrText, qrText }, props) => {
             hover:bg-sky-300
             text-black
           "
-                  >
-                    Generate
-                  </button>
-                </form>
+                >
+                  Generate
+                </button>
+              </form>
 
-                {qrText.length > 0 && (
-                  <QRCode id="QRCode" className="mt-10" value={qrText} />
-                )}
-              </div>
+              {qrText.length > 0 && (
+                <QRCode id="QRCode" className="mt-10" value={qrText} />
+              )}
+
+              {/* {students.length > 0 && ( */}
+                <div className="mt-10">
+                  <h2 className="text-lg font-bold mb-4">Student Attendance</h2>
+                  <table class="table-auto w-full text-sm text-left text-gray-500 dark:text-gray-400">
+    <thead class="text-xs text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+      <tr>
+        <th scope="col" class="py-3 px-6">
+          Roll Number
+        </th>
+        <th scope="col" class="py-3 px-6">
+          Student Name
+        </th>
+        <th scope="col" class="py-3 px-6">
+          marked
+        </th>
+      </tr>
+    </thead>
+    {/* {course != null ? ( */}
+      <>
+        <tbody>
+          <td class="py-4 px-6"></td>
+          <td class="py-4 px-6"></td>
+          <td class="py-4 px-6"></td>
+        </tbody>
+      </>
+    {/* ) : ( */}
+      <></>
+    {/* )} */}
+  </table>
+                </div>
+              {/* )} */}
             </div>
           </div>
         </div>
+      </div>
     </>
   );
 };
