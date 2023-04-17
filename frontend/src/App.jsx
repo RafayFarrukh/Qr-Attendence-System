@@ -1,23 +1,25 @@
-import React, { createContext, useEffect, useReducer, useState } from "react";
-import { Routes, Route } from "react-router-dom";
-import Login from "./Authentication/Login";
-import Signup from "./Authentication/Signup";
-import "./css/style.css";
-import { ToastContainer } from "react-toastify";
-import Header from "./pages/Header";
-import Landing from "./pages/Landing";
-import Home from "./pages/Home";
-import { useNavigate } from "react-router-dom";
-import Sidebar from "./components/Sidebar/Sidebar";
-import { reducer, initialState } from "./reducers/userReducer";
-import AllCourses from "./components/Courses/AllCourses";
-import OneCourse from "./components/Courses/OneCourse";
-import TakeAttendance from "./components/Attendance/TakeAttendance";
+import React, { createContext, useEffect, useReducer, useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import Login from './Authentication/Login';
+import Signup from './Authentication/Signup';
+import './css/style.css';
+import { ToastContainer } from 'react-toastify';
+import Header from './pages/Header';
+import Landing from './pages/Landing';
+import Home from './pages/Home';
+import { useNavigate } from 'react-router-dom';
+import Sidebar from './components/Sidebar/Sidebar';
+import { reducer, initialState } from './reducers/userReducer';
+import AllCourses from './components/Courses/AllCourses';
+import OneCourse from './components/Courses/OneCourse';
+import TakeAttendance from './components/Attendance/TakeAttendance';
+import ShowAttendance from './components/Attendance/ShowAttendance';
+import AttendancePicker from './components/Attendance/AttendancePicker';
 export const UserContext = createContext();
 function App() {
   const navigate = useNavigate();
-  const user = localStorage.getItem("Teacher");
-  const [qrText, setQrText] = useState("");
+  const user = localStorage.getItem('Teacher');
+  const [qrText, setQrText] = useState('');
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const [state, dispatch] = useReducer(reducer, initialState);
   useEffect(() => {
@@ -32,7 +34,7 @@ function App() {
   }, []);
   React.useEffect(() => {
     if (!user) {
-      navigate("/home");
+      navigate('/home');
     } else if (user) {
       console.log(state);
     }
@@ -40,7 +42,7 @@ function App() {
   return (
     <>
       <UserContext.Provider value={{ state, dispatch }}>
-        <div className="flex h-screen overflow-hidden">
+        <div className='flex h-screen overflow-hidden'>
           {user ? (
             <Sidebar
               sidebarOpen={sidebarOpen}
@@ -49,7 +51,7 @@ function App() {
           ) : (
             <></>
           )}
-          <div className="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+          <div className='relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden'>
             {user ? (
               <Header
                 sidebarOpen={sidebarOpen}
@@ -59,16 +61,23 @@ function App() {
               <></>
             )}
             <Routes>
-              <Route path="/home" element={<Home />} />
-              <Route path="/allcourses" element={<AllCourses />} />
-              <Route path="/onecourse/:id" element={<OneCourse />} />
-              <Route path="/takeAttendance" element={<TakeAttendance  setQrText={setQrText} qrText={qrText}/>} />
-              <Route exact path="/login" element={<Login />} />
-              <Route exact path="/signup" element={<Signup />} />
-              <Route exact path="/" element={<Landing />} />
+              <Route path='/home' element={<Home />} />
+              <Route path='/allcourses' element={<AllCourses />} />
+              <Route path='/onecourse/:id' element={<OneCourse />} />
+              <Route
+                path='/takeAttendance'
+                element={
+                  <TakeAttendance setQrText={setQrText} qrText={qrText} />
+                }
+              />
+              <Route path='/showAttendance' element={<ShowAttendance />} />
+              <Route path='/attendancePicker' element={<AttendancePicker />} />
+              <Route exact path='/login' element={<Login />} />
+              <Route exact path='/signup' element={<Signup />} />
+              <Route exact path='/' element={<Landing />} />
             </Routes>
             <ToastContainer
-              position="top-right"
+              position='top-right'
               autoClose={5000}
               hideProgressBar={false}
               newestOnTop={false}
@@ -77,7 +86,7 @@ function App() {
               pauseOnFocusLoss
               draggable
               pauseOnHover
-              theme="colored"
+              theme='colored'
             />
           </div>
         </div>

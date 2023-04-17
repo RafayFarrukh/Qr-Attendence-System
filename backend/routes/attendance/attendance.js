@@ -116,6 +116,7 @@ router.get(
       const newAttendance = new Attendance({
         ClassId: classInfo._id,
         stdId: student.stdId,
+        fullName: student.fullName,
         date: today,
       });
 
@@ -133,11 +134,13 @@ router.get(
   },
 );
 
-router.get('/attendance/:classId', async function (req, res, next) {
+router.post('/attendance/:classId', async function (req, res, next) {
   try {
     const classId = req.params.classId;
     const date = req.body.date;
-
+    if (!date) {
+      return res.status(404).json({ message: 'Date not specified' });
+    }
     // Find the class by ID
     const classInfo = await Class.findById(classId).exec();
     // Make sure the class exists
@@ -168,6 +171,5 @@ router.get('/attendance/:classId', async function (req, res, next) {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
-
 
 module.exports = router;
