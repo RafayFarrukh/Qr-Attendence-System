@@ -138,32 +138,56 @@ router.post('/attendance/:classId', async function (req, res, next) {
   try {
     const classId = req.params.classId;
     const date = req.body.date;
+    console.log(date,classId)
     if (!date) {
       return res.status(404).json({ message: 'Date not specified' });
     }
     // Find the class by ID
     const classInfo = await Class.findById(classId).exec();
+    console.log(classInfo)
     // Make sure the class exists
     if (!classInfo) {
       return res.status(404).json({ message: 'Class not found' });
     }
 
-    // Find the attendance records for the class on the given date
-    const attendance = await Attendance.find({
-      ClassId: classInfo._id,
-      date: date,
-    });
+    // Create an array of student IDs
+    const studentIds = classInfo.students.map((student) => student._id.toString());
 
-    if (!attendance || attendance.length === 0) {
-      return res.status(404).json({
-        message: 'Attendance not found for the class on the given date',
-        success: false,
+    // Find the attendance records for the class on the given date and for the specified students
+    const attendance = await Attendance.find({
+      ClassId: classInfo._id.toString(),
+      date: date,
+      // stdId: { $in: studentIds }
+    });
+console.log(attendance)
+    // Create an object to hold the attendance status for each student
+    const attendanceStatus = {};
+
+    // Set the initial attendance status to "absent" for all students
+    for (const student of classInfo.students) {
+      attendanceStatus[student._id.toString()] = 'absent';
+    }
+
+    // Update the attendance status to "present" for students who are present
+    for (const record of attendance) {
+      attendanceStatus[record.stdId] = 'present';
+    }
+
+    // Create an array of attendance objects for all students in the class
+    const attendanceArray = [];
+    for (const student of classInfo.students) {
+      attendanceArray.push({
+        ClassId: classInfo._id,
+        stdId: student._id.toString(),
+        fullName: student.fullName,
+        date: date,
+        status: attendanceStatus[student._id.toString()],
       });
     }
 
     return res.status(200).json({
       message: 'Attendance found successfully',
-      attendance,
+      attendance: attendanceArray,
       success: true,
     });
   } catch (err) {
@@ -171,5 +195,10 @@ router.post('/attendance/:classId', async function (req, res, next) {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+
+
+
+
 
 module.exports = router;

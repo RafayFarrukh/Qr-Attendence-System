@@ -8,14 +8,15 @@ import BaseURL from '../../services/BaseURL';
 
 const AttendancePicker = () => {
   const { state } = useContext(UserContext);
+  const [attendance, setAttendance]=useState([])
   // const attendance = [];
-  const attendance = [
-    { id: 1, name: 'John Doe', status: 'Present', date: '04-17-2023' },
-    { id: 2, name: 'Jane Smith', status: 'Absent', date: '04-17-2023' },
-    { id: 3, name: 'Bob Brown', status: 'Present', date: '04-18-2023' },
-    { id: 4, name: 'Alice Green', status: 'Absent', date: '04-18-2023' },
-    // add more data here
-  ];
+  // const attendance = [
+  //   { id: 1, name: 'John Doe', status: 'Present', date: '04-17-2023' },
+  //   { id: 2, name: 'Jane Smith', status: 'Absent', date: '04-17-2023' },
+  //   { id: 3, name: 'Bob Brown', status: 'Present', date: '04-18-2023' },
+  //   { id: 4, name: 'Alice Green', status: 'Absent', date: '04-18-2023' },
+  //   // add more data here
+  // ];
   const [selectedDate, setSelectedDate] = useState(null);
 
   const handleDateChange = (date) => {
@@ -43,9 +44,13 @@ const AttendancePicker = () => {
         { date: formattedDate },
       )
       .then((res) => {
+        setAttendance(res.data.attendance)
         console.log(res.data.attendance);
         // attendance = res.data.attendance;
-      });
+      }).catch((e)=>{
+        console.log(e,"error in catch")
+      })
+      
   }, [formattedDate]);
   return (
     // <div className='w-full max-w-md'>
@@ -84,6 +89,9 @@ const AttendancePicker = () => {
                   <th className='px-6 py-3 text-sm font-bold text-left text-gray-600 uppercase tracking-wider'>
                     Name
                   </th>
+                    <th className='px-6 py-3 text-sm font-bold text-left text-gray-600 uppercase tracking-wider'>
+                    Student Id
+                  </th>
                   <th className='px-6 py-3 text-sm font-bold text-left text-gray-600 uppercase tracking-wider'>
                     Status
                   </th>
@@ -95,12 +103,15 @@ const AttendancePicker = () => {
               <tbody className='bg-white divide-y divide-gray-200'>
                 {filteredAttendance ? (
                   filteredAttendance.map((item) => (
-                    <tr key={item.id}>
+                    <tr key={item._id}>
                       <div className='ml-4 mt-4'>
                         <div className='text-sm font-medium text-gray-900'>
-                          {item.name}
+                          {item.fullName}
                         </div>
                       </div>
+                        <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-500'>
+                        {item.stdId}
+                      </td>
                       <td className='px-6 py-4 whitespace-nowrap'>
                         <span
                           className={`inline-flex px-2 text-xs font-semibold leading-5 rounded-full ${

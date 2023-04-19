@@ -15,9 +15,9 @@ const AllCourses = () => {
 
   useEffect(() => {
     axiosInstance.get("api/course/teacher/ShowAllCourses").then((res) => {
-       setSinglecourse(res.data.courseList.map((course) => course._id))
+       setSinglecourse(res.data.courseList?.map((course) => course._id))
       // console.log(courseList.map((course) => course.Course));
-      setCourses(res.data.courseList.map((course) => course.Course));
+      setCourses(res.data.courseList?.map((course) => course.Course));
 
     //   console.log(res.data.courseList.map((course) => course.Course));
       // console.log(courses);
