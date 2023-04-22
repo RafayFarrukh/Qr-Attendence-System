@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import axiosInstance from '../../services/axiosInstance';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { UserContext } from '../../App';
+import baseURL from '../../services/BaseURL';
 
 const OneCourse = () => {
   const { state, dispatch } = useContext(UserContext);
@@ -14,12 +15,14 @@ const OneCourse = () => {
   var id = split[2];
   useEffect(() => {
     console.log(state);
-    axiosInstance.get(`/api/course/teacher/showOneCourse/${id}`).then((res) => {
-      console.log(res.data.classObj);
-      localStorage.setItem('classId', id)
-      dispatch({ type: 'FetchClassId', payload: id });
-      setCourse(res.data.classObj);
-    });
+    axiosInstance
+      .get(`${baseURL}/api/course/teacher/showOneCourse/${id}`)
+      .then((res) => {
+        console.log(res.data.classObj);
+        localStorage.setItem('classId', id);
+        dispatch({ type: 'FetchClassId', payload: id });
+        setCourse(res.data.classObj);
+      });
   }, [course]);
   useEffect(() => {
     console.log(state);

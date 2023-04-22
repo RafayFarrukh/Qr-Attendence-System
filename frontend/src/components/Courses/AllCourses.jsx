@@ -3,25 +3,25 @@ import axiosInstance from '../../services/axiosInstance';
 import { useNavigate } from 'react-router-dom';
 
 import axios from 'axios';
+import baseURL from '../../services/BaseURL';
 
 const AllCourses = () => {
   const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
   const [singlecourse, setSinglecourse] = useState();
   const token = localStorage.getItem('Token');
-  useEffect(() => {
-    // console.log(courses._id);
-  }, []);
 
   useEffect(() => {
-    axiosInstance.get('api/course/teacher/ShowAllCourses').then((res) => {
-      setSinglecourse(res.data.courseList?.map((course) => course._id));
-      // console.log(courseList.map((course) => course.Course));
-      setCourses(res.data.courseList?.map((course) => course.Course));
+    axiosInstance
+      .get(`${baseURL}/api/course/teacher/ShowAllCourses`)
+      .then((res) => {
+        setSinglecourse(res.data.courseList?.map((course) => course._id));
+        // console.log(courseList.map((course) => course.Course));
+        setCourses(res.data.courseList?.map((course) => course.Course));
 
-      //   console.log(res.data.courseList.map((course) => course.Course));
-      // console.log(courses);
-    });
+        //   console.log(res.data.courseList.map((course) => course.Course));
+        // console.log(courses);
+      });
   }, [courses]);
   return (
     <>
