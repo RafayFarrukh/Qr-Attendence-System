@@ -7,8 +7,9 @@ import axiosInstance from '../../services/axiosInstance';
 import BaseURL from '../../services/BaseURL';
 
 const AttendancePicker = () => {
+  const [error, setError] = useState();
   const { state } = useContext(UserContext);
-  const [attendance, setAttendance]=useState([])
+  const [attendance, setAttendance] = useState([]);
   // const attendance = [];
   // const attendance = [
   //   { id: 1, name: 'John Doe', status: 'Present', date: '04-17-2023' },
@@ -18,7 +19,7 @@ const AttendancePicker = () => {
   //   // add more data here
   // ];
   const [selectedDate, setSelectedDate] = useState(null);
-
+  const classId = localStorage.getItem('classId');
   const handleDateChange = (date) => {
     setSelectedDate(date);
   };
@@ -37,20 +38,22 @@ const AttendancePicker = () => {
     .padStart(2, '0')}`;
 
   useEffect(() => {
-    console.log(formattedDate);
+    console.log(state, 'state');
     axiosInstance
-      .post(
-        `${BaseURL}/api/class/teacher/attendance/attendance/${state?.classId}`,
-        { date: formattedDate },
-      )
-      .then((res) => {
-        setAttendance(res.data.attendance)
-        console.log(res.data.attendance);
-        // attendance = res.data.attendance;
-      }).catch((e)=>{
-        console.log(e,"error in catch")
+      .post(`${BaseURL}/api/class/teacher/attendance/attendance/${classId}`, {
+        date: formattedDate,
       })
-      
+      .then((res) => {
+        setError('');
+        setAttendance(res.data.attendance);
+        console.log(res.data.attendance, 'attendance');
+        // attendance = res.data.attendance;
+      })
+      .catch((res) => {
+        if (res.response.data.success == false) {
+          setError(res.response.data.message);
+        }
+      });
   }, [formattedDate]);
   return (
     // <div className='w-full max-w-md'>
@@ -89,7 +92,7 @@ const AttendancePicker = () => {
                   <th className='px-6 py-3 text-sm font-bold text-left text-gray-600 uppercase tracking-wider'>
                     Name
                   </th>
-                    <th className='px-6 py-3 text-sm font-bold text-left text-gray-600 uppercase tracking-wider'>
+                  <th className='px-6 py-3 text-sm font-bold text-left text-gray-600 uppercase tracking-wider'>
                     Student Id
                   </th>
                   <th className='px-6 py-3 text-sm font-bold text-left text-gray-600 uppercase tracking-wider'>
@@ -101,7 +104,7 @@ const AttendancePicker = () => {
                 </tr>
               </thead>
               <tbody className='bg-white divide-y divide-gray-200'>
-                {filteredAttendance ? (
+                {filteredAttendance && !error ? (
                   filteredAttendance.map((item) => (
                     <tr key={item._id}>
                       <div className='ml-4 mt-4'>
@@ -109,13 +112,13 @@ const AttendancePicker = () => {
                           {item.fullName}
                         </div>
                       </div>
-                        <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-500'>
+                      <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-500'>
                         {item.stdId}
                       </td>
                       <td className='px-6 py-4 whitespace-nowrap'>
                         <span
                           className={`inline-flex px-2 text-xs font-semibold leading-5 rounded-full ${
-                            item.status === 'Present'
+                            item.status === 'present'
                               ? 'bg-green-100 text-green-800'
                               : 'bg-red-100 text-red-800'
                           }`}
@@ -129,7 +132,7 @@ const AttendancePicker = () => {
                     </tr>
                   ))
                 ) : (
-                  <div className='px-6 py-4 whitespace-nowrap text-sm text-gray-500'>
+                  <div className='px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-bold italic'>
                     No Attendance available for current date
                   </div>
                 )}

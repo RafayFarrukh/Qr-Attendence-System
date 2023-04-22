@@ -16,10 +16,11 @@ const OneCourse = () => {
     console.log(state);
     axiosInstance.get(`/api/course/teacher/showOneCourse/${id}`).then((res) => {
       console.log(res.data.classObj);
+      localStorage.setItem('classId', id)
       dispatch({ type: 'FetchClassId', payload: id });
       setCourse(res.data.classObj);
     });
-  }, []);
+  }, [course]);
   useEffect(() => {
     console.log(state);
   }, []);

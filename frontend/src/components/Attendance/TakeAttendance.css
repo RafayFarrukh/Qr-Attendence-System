@@ -1,0 +1,40 @@
+/* Switch */
+label .relative {
+  width: 2.5rem;
+  height: 1.5rem;
+}
+
+label input[type="checkbox"] {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+label .block {
+  position: absolute;
+  top: 0.25rem;
+  left: 0.25rem;
+  transition: transform 300ms ease-in-out;
+}
+
+label .bg-gray-400 {
+  width: 100%;
+  height: 100%;
+  border-radius: 9999px;
+}
+
+label .bg-white {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+/* Checked state */
+label input[type="checkbox"]:checked + .relative .block {
+  transform: translateX(1rem);
+}
+
+/* Customization */
+label .ml-2 {
+  margin-left: 0.5rem;
+}
