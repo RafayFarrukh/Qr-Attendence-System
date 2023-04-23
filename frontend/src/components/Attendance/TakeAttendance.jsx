@@ -7,24 +7,41 @@ import QRCode from 'react-qr-code';
 import { useLocation, useParams } from 'react-router-dom';
 import baseURL from '../../services/BaseURL';
 
-const TakeAttendance = ({ setQrText, qrText }, props) => {
+const TakeAttendance = (
+  { setQrText, qrText, currentDate, setCurrentDate },
+  props,
+) => {
+  const { state } = useContext(UserContext);
   const [attendance, setAttendance] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(null);
+  useEffect(() => {
+    console.log(selectedDate, 'selected date in take attendance');
+    setSelectedDate(currentDate);
+  }, [currentDate, selectedDate]);
+  const date = selectedDate;
+  const year = date?.getFullYear();
+  const month = date?.getMonth() + 1;
+  const day = date?.getDate();
+  const formattedDate = `${year}-${month?.toString().padStart(2, '0')}-${day
+    ?.toString()
+    .padStart(2, '0')}`;
 
   // const classId = props;
-  const { state } = useContext(UserContext);
-  const [isChecked, setIsChecked] = useState(false);
   const classId = localStorage.getItem('classId');
-  const handleCheckboxClick = () => {
-    setIsChecked(!isChecked);
-  };
+
   // const [class, setClass] = useState("");
   const [text, setText] = useState('');
-  const [className, setClassName] = useState('');
+
   useEffect(() => {
     console.log('in hte useEffect');
+    // setSelectedDate(currentDate);
+
     axiosInstance
-      .get(
+      .post(
         `${baseURL}/api/class/teacher/attendance/RealTimeAttendance/${classId}`,
+        {
+          date: formattedDate,
+        },
       )
       .then((res) => {
         console.log(res.data.attendance, 'res data');
@@ -32,13 +49,41 @@ const TakeAttendance = ({ setQrText, qrText }, props) => {
         // attendance = res.data.attendance;
       })
       .catch((res) => {});
-  }, [isChecked]);
+  }, [formattedDate]);
+
+  const [isChecked, setIsChecked] = useState([]);
+  useEffect(() => {
+    setIsChecked(
+      attendance.map((student) => ({
+        stdId: student.stdId,
+        isChecked: student.status === 'present',
+      })),
+    );
+  }, [attendance]);
+  const handleCheckboxClick = (stdId) => {
+    console.log('we are in on change', stdId);
+    setIsChecked((prevList) =>
+      prevList.map((student) => {
+        try {
+          console.log('current student:', student);
+          console.log('should update:', student.stdId === stdId);
+          return student.stdId === stdId
+            ? { ...student, isChecked: !student.isChecked }
+            : student;
+        } catch (error) {
+          console.log('Error:', error);
+        }
+      }),
+    );
+  };
+
   const submit = async (e) => {
     e.preventDefault();
     // e.target.reset();
     const timestamp = Date.now();
+
     const teacherId = state?.user?._id;
-    const classId = state?.classId;
+    const classId = localStorage.getItem('classId');
     const data1 = { classId, teacherId, timestamp };
     const data = JSON.stringify(data1);
     // setQrText(`Author: ${User.fullName}, Text: ${text}`);
@@ -116,40 +161,42 @@ const TakeAttendance = ({ setQrText, qrText }, props) => {
                 <tr className='border-b border-gray-200 dark:border-gray-700'>
                   <td className='py-4 px-6'>{student.stdId}</td>
                   <td className='py-4 px-6'>{student.fullName}</td>
-                  {/* // */}
-
                   <td className='py-4 px-6'>
                     <div className='flex items-center'>
                       <input
-                        id='toggle'
+                        id={student.stdId}
                         type='checkbox'
                         className='hidden'
-                        checked={isChecked}
-                        onChange={handleCheckboxClick}
+                        checked={
+                          isChecked.find((s) => s.stdId === student.stdId)
+                            ?.isChecked
+                        }
+                        onChange={() => handleCheckboxClick(student.stdId)}
                       />
                       <label
-                        htmlFor='toggle'
+                        htmlFor={student.stdId}
                         className='flex items-center cursor-pointer'
                       >
                         <div className='relative'>
                           <div className='block bg-gray-600 w-12 h-6 rounded-full'></div>
                           <div
                             className={`${
-                              isChecked
+                              isChecked.find((s) => s.stdId === student.stdId)
+                                ?.isChecked
                                 ? 'translate-x-6 bg-green-400'
                                 : 'translate-x-0 bg-white'
                             } absolute left-0 top-0 w-6 h-6 rounded-full shadow-md transform transition-all duration-300`}
                           ></div>
                         </div>
-                        <div className='ml-3 text-gray-700 font-medium'>
-                          {' '}
-                          {isChecked ? 'Present' : 'Absent'}
-                        </div>
+                        <span className='ml-2'>
+                          {isChecked.find((s) => s.stdId === student.stdId)
+                            ?.isChecked
+                            ? 'Present'
+                            : 'Absent'}
+                        </span>
                       </label>
                     </div>
                   </td>
-
-                  {/* // */}
                 </tr>
               ))}
             </tbody>

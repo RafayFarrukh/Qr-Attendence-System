@@ -22,7 +22,9 @@ function App() {
   const [qrText, setQrText] = useState('');
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [currentDate, setCurrentDate] = useState();
   useEffect(() => {
+    setCurrentDate(new Date());
     // const user = JSON.parse(localStorage.getItem("Teacher"));
     // const token = localStorage.getItem("Token");
     // if (user) {
@@ -67,7 +69,12 @@ function App() {
               <Route
                 path='/takeAttendance'
                 element={
-                  <TakeAttendance setQrText={setQrText} qrText={qrText} />
+                  <TakeAttendance
+                    setQrText={setQrText}
+                    qrText={qrText}
+                    currentDate={currentDate}
+                    setCurrentDate={setCurrentDate}
+                  />
                 }
               />
               <Route path='/showAttendance' element={<ShowAttendance />} />

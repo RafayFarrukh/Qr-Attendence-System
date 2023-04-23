@@ -221,10 +221,14 @@ router.post('/attendance/:classId', async function (req, res, next) {
   }
 });
 
-router.get('/RealTimeAttendance/:classId', async function (req, res, next) {
+router.post('/RealTimeAttendance/:classId', async function (req, res, next) {
   try {
     const classId = req.params.classId;
-
+    const date = req.body.date;
+    // console.log(date,classId)
+    if (!date) {
+      return res.status(404).json({ message: 'Date not specified' });
+    }
     // Find the class by ID
     const classInfo = await Class.findById(classId).exec();
     // console.log(classInfo)
@@ -236,6 +240,17 @@ router.get('/RealTimeAttendance/:classId', async function (req, res, next) {
     // Create an array of student IDs
 
     // Find the attendance records for the class on the given date and for the specified students
+    const attendance = await Attendance.find({
+      ClassId: classInfo._id.toString(),
+      date: date,
+      // stdId: { $in: studentIds }
+    });
+    console.log(attendance, 'attendance for dates');
+    // if (!attendance || attendance.length === 0) {
+    //   return res
+    //     .status(404)
+    //     .json({ message: 'Attendance not found', success: false });
+    // }
 
     const studentIds = classInfo.students.map((student) => student._id);
     const attendanceStatus = {};
@@ -247,13 +262,48 @@ router.get('/RealTimeAttendance/:classId', async function (req, res, next) {
     }
     // console.log(students,'students Array')
 
+    // Update the attendance status to "present" for students who are present
+    for (const student of students) {
+      attendanceStatus[student.stdId] = 'absent';
+    }
+    for (const record of attendance) {
+      attendanceStatus[record.stdId] = 'present';
+      console.log(record, 'present record--------------');
+    }
+    // console.log(attendanceStatus,"attendance")
+    // Create an array of attendance objects for all students in the class
+    const attendanceArray = [];
+    for (const student of students) {
+      const status = attendanceStatus[student.stdId];
+      if (status === 'present') {
+        attendanceArray.push({
+          ClassId: classInfo._id,
+          stdId: student.stdId,
+          fullName: student.fullName,
+          date: date,
+          status: status,
+        });
+      } else {
+        attendanceArray.push({
+          ClassId: classInfo._id,
+          stdId: student.stdId,
+
+          fullName: student.fullName,
+          date: date,
+          status: 'absent',
+        });
+      }
+    }
     // console.log(attendanceArray,"attendance array")
     return res.status(200).json({
-      message: 'Students Present',
-      attendance: students,
+      message: 'Attendance found successfully',
+      attendance: attendanceArray,
       success: true,
     });
-  } catch (error) {}
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 module.exports = router;
