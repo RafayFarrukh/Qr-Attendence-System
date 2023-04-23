@@ -1,12 +1,16 @@
 var express = require('express');
 var router = express.Router();
 const mongoose = require('mongoose');
-
+// const io = require('../server');
 const Student = require('../../models/Student');
 const Teacher = require('../../models/Teacher');
 const Course = require('../../models/Course');
 const Class = require('../../models/Class');
 const Attendance = require('../../models/Attendance');
+const io = require('../../server');
+const axios = require('axios');
+
+let takeAttendencestarted = false;
 router.get(
   '/takeAttendence/:classId/students/:studentId/attendance',
   async function (req, res, next) {
@@ -124,6 +128,8 @@ router.get(
 
       await newAttendance.save();
       console.log('attendance marked successfull');
+      global.io.emit('attendanceMarked', newAttendance);
+      takeAttendencestarted = true;
       return res.status(200).json({
         message: 'Attendance marked successfully',
         newAttendance,
@@ -238,6 +244,7 @@ router.post('/RealTimeAttendance/:classId', async function (req, res, next) {
     }
 
     // Create an array of student IDs
+    var attendanceArray = [];
 
     // Find the attendance records for the class on the given date and for the specified students
     const attendance = await Attendance.find({
@@ -245,7 +252,7 @@ router.post('/RealTimeAttendance/:classId', async function (req, res, next) {
       date: date,
       // stdId: { $in: studentIds }
     });
-    console.log(attendance, 'attendance for dates');
+    // console.log(attendance, 'attendance for dates');
     // if (!attendance || attendance.length === 0) {
     //   return res
     //     .status(404)
@@ -257,7 +264,7 @@ router.post('/RealTimeAttendance/:classId', async function (req, res, next) {
     let students = [];
     for (const id of studentIds) {
       const student = await Student.findById(id);
-      console.log(students, 'found student');
+      // console.log(students, 'found student');
       students.push(student);
     }
     // console.log(students,'students Array')
@@ -268,11 +275,10 @@ router.post('/RealTimeAttendance/:classId', async function (req, res, next) {
     }
     for (const record of attendance) {
       attendanceStatus[record.stdId] = 'present';
-      console.log(record, 'present record--------------');
+      // console.log(record, 'present record--------------');
     }
     // console.log(attendanceStatus,"attendance")
     // Create an array of attendance objects for all students in the class
-    const attendanceArray = [];
     for (const student of students) {
       const status = attendanceStatus[student.stdId];
       if (status === 'present') {
@@ -294,7 +300,11 @@ router.post('/RealTimeAttendance/:classId', async function (req, res, next) {
         });
       }
     }
-    // console.log(attendanceArray,"attendance array")
+    // Initialize Socket.IO server
+    if (takeAttendencestarted === true) {
+      global.io.emit('attendanceUpdated', attendanceArray);
+    }
+    // console.log(attendanceArray, 'attendance array');
     return res.status(200).json({
       message: 'Attendance found successfully',
       attendance: attendanceArray,
@@ -306,4 +316,7 @@ router.post('/RealTimeAttendance/:classId', async function (req, res, next) {
   }
 });
 
+// io.on('connection', (socket) => {
+//   console.log('Connected to socket! in attendance.js', socket.id);
+// });
 module.exports = router;

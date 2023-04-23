@@ -1,13 +1,23 @@
 const express = require('express');
+const http = require('http');
+const socketIO = require('socket.io');
 const dbConnect = require('./db/db-connect.js');
 const teacherAuth = require('./routes/auth/teacher');
 const studentAuth = require('./routes/auth/student');
 const course = require('./routes/course/course');
-const attendance = require('./routes/attendance/attendance');
 const StudentClass = require('./routes/class/class');
 const cors = require('cors');
 const apiauth = require('./middleware/apiAuth.js');
+// const attendanceArray = require('./routes/attendance/attendance');
 const app = express();
+var server = http.createServer(app);
+var io = socketIO(server, {
+  cors: {
+    origin: '*',
+  },
+});
+const attendance = require('./routes/attendance/attendance', io);
+
 require('dotenv').config();
 app.use(express.json());
 app.use(cors());
@@ -26,30 +36,34 @@ app.use('/api/class/teacher/attendance', apiauth, attendance);
 app.get('/', (req, res) => {
   res.send('welcome to backend of Qr code');
 });
-// app.use(function (req, res, next) {
-//   res.header(
-//     'Access-Control-Allow-Origin',
-//     'https://qr-attendence-system.vercel.app' || 'https://localhost:3000',
-//   );
-//   res.header(
-//     'Access-Control-Allow-Headers',
-//     'Origin, X-Requested-With, Content-Type, Accept',
-//   );
-//   next();
-// });
 
 const port = process.env.PORT || 5000;
-const server = () => {
+
+// Initialize Socket.IO server
+io.on('connection', (socket) => {
+  console.log('Connected to socket!', socket.id);
+  socket.on('connect', () => {
+    console.log('Connected to socket!');
+  });
+  // console.log(attendanceArray, 'attendance');
+  socket.emit('attendanceUpdated', 'attendgfgfance');
+  // Emit a welcome message to the client
+  socket.on('disconnect', (reason) => {
+    console.log('a user disconnected', socket.id);
+  });
+});
+
+const startServer = async () => {
   try {
-    dbConnect(process.env.MONGO_URL)
-      .then(() => console.log('db-connected'))
-      .catch(() => console.log('Error in connecting'));
+    await dbConnect(process.env.MONGO_URL);
+    console.log('db-connected');
+    server.listen(port, () => {
+      console.log(`server is listening on port ${port}`);
+    });
   } catch (error) {
     console.log(error);
   }
 };
 
-server();
-app.listen(port, () => {
-  console.log(`server is listening on port ${port}`);
-});
+startServer();
+global.io = io;

@@ -6,14 +6,19 @@ import axiosInstance from '../../services/axiosInstance';
 import QRCode from 'react-qr-code';
 import { useLocation, useParams } from 'react-router-dom';
 import baseURL from '../../services/BaseURL';
-
+import io from 'socket.io-client';
+const SOCKET_IO_SERVER = 'https://qr-attendence-system-backend.vercel.app';
 const TakeAttendance = (
   { setQrText, qrText, currentDate, setCurrentDate },
   props,
 ) => {
+  const classId = localStorage.getItem('classId');
+
   const { state } = useContext(UserContext);
+  const [socket, setSocket] = useState(null);
   const [attendance, setAttendance] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
+
   useEffect(() => {
     console.log(selectedDate, 'selected date in take attendance');
     setSelectedDate(currentDate);
@@ -27,11 +32,41 @@ const TakeAttendance = (
     .padStart(2, '0')}`;
 
   // const classId = props;
-  const classId = localStorage.getItem('classId');
 
   // const [class, setClass] = useState("");
   const [text, setText] = useState('');
-
+  useEffect(() => {
+    const socket = io(SOCKET_IO_SERVER);
+    setSocket(socket);
+    // event listener for successful socket connection
+    socket.on('connect', () => {
+      console.log('Connected to socket from client');
+    });
+    socket.on('attendanceMarked', (data) => {
+      if (data) {
+        axiosInstance
+          .post(
+            `${baseURL}/api/class/teacher/attendance/RealTimeAttendance/${classId}`,
+            {
+              date: formattedDate,
+            },
+          )
+          .then((res) => {
+            console.log(res.data.attendance, 'res data');
+            setAttendance(res.data.attendance);
+            // attendance = res.data.attendance;
+          });
+      }
+      console.log(data, 'attendance marked');
+    });
+    socket.on('attendanceUpdated', (data) => {
+      console.log(data, 'attendance array ');
+    });
+    // cleanup function to disconnect socket when component unmounts
+    return () => {
+      socket.disconnect();
+    };
+  }, [formattedDate]);
   useEffect(() => {
     console.log('in hte useEffect');
     // setSelectedDate(currentDate);
@@ -59,6 +94,11 @@ const TakeAttendance = (
         isChecked: student.status === 'present',
       })),
     );
+    if (socket) {
+      socket.on('attendanceUpdated', (data) => {
+        console.log(data);
+      });
+    }
   }, [attendance]);
   const handleCheckboxClick = (stdId) => {
     console.log('we are in on change', stdId);
