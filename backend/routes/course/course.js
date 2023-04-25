@@ -76,4 +76,33 @@ try {
 });
 
 
+// students courses
+
+router.get("/showAllCourses/student", async function (req, res, next) {
+  try {
+    const studentEmail = req.user._id;
+
+    let courseList = await Class.find({
+      "students._id": studentEmail,
+    })
+      .populate("Course._id")
+      .exec();
+
+    if (!courseList || courseList.length === 0) {
+      return res.status(404).json({
+        message: "Student is not enrolled in any class",
+      });
+    }
+
+    res.status(200).json({
+      courseList,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+});
+
+
 module.exports = router;

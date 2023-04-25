@@ -1,14 +1,9 @@
 var express = require('express');
 var router = express.Router();
-const mongoose = require('mongoose');
-// const io = require('../server');
 const Student = require('../../models/Student');
-const Teacher = require('../../models/Teacher');
-const Course = require('../../models/Course');
 const Class = require('../../models/Class');
 const Attendance = require('../../models/Attendance');
-const io = require('../../server');
-const axios = require('axios');
+
 
 let takeAttendencestarted = false;
 router.get(
@@ -316,7 +311,4 @@ router.post('/RealTimeAttendance/:classId', async function (req, res, next) {
   }
 });
 
-// io.on('connection', (socket) => {
-//   console.log('Connected to socket! in attendance.js', socket.id);
-// });
 module.exports = router;
