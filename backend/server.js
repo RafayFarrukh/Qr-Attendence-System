@@ -6,6 +6,7 @@ const teacherAuth = require('./routes/auth/teacher');
 const studentAuth = require('./routes/auth/student');
 const course = require('./routes/course/course');
 const StudentClass = require('./routes/class/class');
+const studentProfile = require('./routes/student/student.js');
 const cors = require('cors');
 const apiauth = require('./middleware/apiAuth.js');
 // const attendanceArray = require('./routes/attendance/attendance');
@@ -17,7 +18,7 @@ var io = socketIO(server, {
   },
 });
 const attendance = require('./routes/attendance/attendance', io);
-const studentAttendance=require('./routes/attendance/student/attendance.js')
+const studentAttendance = require('./routes/attendance/student/attendance.js');
 require('dotenv').config();
 app.use(express.json());
 app.use(cors());
@@ -33,6 +34,7 @@ app.use('/api/class/teacher', apiauth, StudentClass);
 // app.use("/api/class/teacher/attendance",apiauth, attendance);
 app.use('/api/class/teacher/attendance', apiauth, attendance);
 app.use('/api/class/student/attendance', apiauth, studentAttendance);
+app.use('/api/class/student', apiauth, studentProfile);
 
 app.get('/', (req, res) => {
   res.send('welcome to backend of Qr code');

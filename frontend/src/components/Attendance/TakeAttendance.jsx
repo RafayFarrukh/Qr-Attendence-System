@@ -7,7 +7,10 @@ import QRCode from 'react-qr-code';
 import { useLocation, useParams } from 'react-router-dom';
 import baseURL from '../../services/BaseURL';
 import io from 'socket.io-client';
-const SOCKET_IO_SERVER = 'https://qr-attendence-system-backend.vercel.app';
+const SOCKET_IO_SERVER =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:5000'
+    : 'https://qr-attendence-system-backend.vercel.app';
 const TakeAttendance = (
   { setQrText, qrText, currentDate, setCurrentDate },
   props,

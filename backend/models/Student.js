@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const StudentSchema = new mongoose.Schema({
   stdId: {
@@ -9,12 +9,12 @@ const StudentSchema = new mongoose.Schema({
   email: {
     type: String,
     unique: true,
-    required: "Your email is required",
+    required: 'Your email is required',
     trim: true,
   },
   password: {
     type: String,
-    required: "Your password is required",
+    required: 'Your password is required',
     max: 50,
   },
   fullName: {
@@ -22,7 +22,7 @@ const StudentSchema = new mongoose.Schema({
     required: true,
   },
   imageUrl: {
-    type: String,
+    data: Buffer,
   },
 });
-module.exports = mongoose.model("Student", StudentSchema);
+module.exports = mongoose.model('Student', StudentSchema);
