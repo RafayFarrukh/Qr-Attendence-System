@@ -24,5 +24,13 @@ const StudentSchema = new mongoose.Schema({
   imageUrl: {
     data: Buffer,
   },
+  verified: {
+    type: Boolean,
+    default: false,
+  },
+  otp: {
+    type: Number,
+  },
+  otpTimestamp: { type: Date },
 });
 module.exports = mongoose.model('Student', StudentSchema);
