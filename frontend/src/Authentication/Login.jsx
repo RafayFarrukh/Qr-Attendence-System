@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import LockIcon from "@mui/icons-material/Lock";
 import EmailIcon from "@mui/icons-material/Email";
+import { AiOutlineEyeInvisible, AiOutlineEye} from 'react-icons/ai';
 import classes from "./login.module.css";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -24,6 +25,11 @@ const validationSchema = Yup.object().shape({
 const Login = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
   const { state, dispatch } = useContext(UserContext);
   return (
     <>
@@ -100,12 +106,15 @@ const Login = () => {
                           {" "}
                           Email address
                         </span>
+                        {/* <div className="border border-gray-300 p-2 rounded-md w-full focus:outline-none focus:border-blue-500"> */}
                         <Field
                           name="email"
-                          className={classes.inputsignup}
+                          className="border border-gray-300 p-3 rounded-lg w-full mt-4  mb-3 focus:outline-none focus:border-blue-500"
                           type="email"
                           placeholder="Enter Email here"
                         />
+                        {/* </div> */}
+                       
                       </label>
                       {touched.email && errors.email ? (
                         <small>{errors.email}</small>
@@ -115,12 +124,26 @@ const Login = () => {
                         <span className="text-gray-700 ml-2 font-bold">
                           Password
                         </span>
-                        <Field
-                          name="password"
-                          type="password"
-                          className={classes.inputsignup}
-                          placeholder="Enter Password here"
-                        />
+                        <div>
+
+                        
+                        </div>
+                        <div className="relative">
+                  <Field
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    className="border border-gray-300 p-3 rounded-lg w-full mt-3 focus:outline-none focus:border-blue-100 pr-10"
+                    placeholder="Enter Password here"
+                  />
+                  <button
+                    type="button"
+                    className="absolute top-3 right-0 mr-3 mt-3"
+                    onClick={toggleShowPassword}
+                  >
+                     {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                  </button>
+              
+                </div>
                       </label>
                       {touched.password && errors.password ? (
                         <small>{errors.password}</small>

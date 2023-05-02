@@ -1,52 +1,24 @@
 import React from "react";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { Link } from "react-router-dom";
-import Navbar from "./Navbar";
-
+import ScanLanding from "../css/images/ScanLanding.jpg";
+import ScanLanding2 from "../css/images/ScanLanding2.jpg";
+import Navbar from './Navbar'
 const Home = () => {
   return (
     <>
       <header>
-        <Navbar />
-        {/* <nav class="bg-white border-gray-200 px-4 lg:px-6 py-2.5 dark:bg-gray-800">
-          <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
-            <a href="https://flowbite.com" class="flex items-center">
-              <img
-                src="https://flowbite.com/docs/images/logo.svg"
-                class="mr-3 h-6 sm:h-9"
-                alt="Flowbite Logo"
-              />
-              <span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
-                Qr_Code
-              </span>
-            </a>
-            <div class="flex items-center lg:order-2">
-              <Link
-                to="/login"
-                class="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
-              >
-                Log in
-              </Link>
-              <Link
-                to="/signup"
-                class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
-              >
-                Signup
-              </Link>
-            </div>
-          </div>
-        </nav> */}
+       <Navbar/>
       </header>
 
-      <section class="bg-white dark:bg-gray-900">
+      <section class="bg-gray-100 dark:bg-gray-900">
         <div class="grid py-8 px-4 mx-auto max-w-screen-xl lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
           <div class="place-self-center mr-auto lg:col-span-7">
             <h1 class="mb-4 max-w-2xl text-4xl font-extrabold leading-none md:text-5xl xl:text-6xl dark:text-white">
               Attendence System Using Qr Code
             </h1>
             <p class="mb-6 max-w-2xl font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">
-              From checkout to global sales tax compliance, companies around the
-              world use Flowbite to simplify their payment stack.
+              Now Taking Attendance is very Simple and Easy. Just Scan the Qr
             </p>
             <a
               href="#"
@@ -62,28 +34,76 @@ const Home = () => {
             </a>
           </div>
           <div class="hidden lg:mt-0 lg:col-span-5 lg:flex">
-            <img
-              src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/hero/phone-mockup.png"
-              alt="mockup"
-            />
+            <img src={ScanLanding} alt="mockup" />
           </div>
         </div>
       </section>
-
+      <section className=" flex-1 bg-white py-12 px-6 flex flex-col items-center justify-center">
+        <h2 className="text-3xl font-bold font-light text-gray-900 mb-6 text-center">
+          Streamline Attendance with QR Codes
+        </h2>
+        <p className="text-lg text-gray-700 mb-8 text-center">
+          Our app makes attendance tracking easy and efficient with QR codes.
+          Scan and go!
+        </p>
+        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+          Get Started
+        </button>
+      </section>
+      <section className="bg-gray-100 py-12 px-6">
+        <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
+          Key Features
+        </h2>
+        <div className="grid grid-cols-3 gap-8">
+          <div className="flex flex-col items-center">
+            <img
+              src={ScanLanding2}
+              alt="Feature 1"
+              className="w-32 h-32 mb-4"
+            />
+            <h3 className="text-xl font-bold text-gray-900 mb-2">
+              Easy to Use
+            </h3>
+            <p className="text-lg text-gray-700 text-center">
+              Our app is intuitive and user-friendly, making attendance tracking
+              a breeze.
+            </p>
+          </div>
+          <div className="flex flex-col items-center">
+            <img
+              src={ScanLanding2}
+              alt="Feature 2"
+              className="w-32 h-32 mb-4"
+            />
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Efficient</h3>
+            <p className="text-lg text-gray-700 text-center">
+              Scan QR codes to record attendance quickly and accurately.
+            </p>
+          </div>
+          <div className="flex flex-col items-center">
+            <img
+              src={ScanLanding2}
+              alt="Feature 3"
+              className="w-32 h-32 mb-4"
+            />
+            <h3 className="text-xl font-bold text-gray-900 mb-2">
+              Customizable
+            </h3>
+            <p className="text-lg text-gray-700 text-center">
+              Customize the app to fit your organization's branding and needs.
+            </p>
+          </div>
+        </div>
+      </section>
       <footer class="p-4 bg-gray-50 sm:p-6 dark:bg-gray-800">
         <div class="mx-auto max-w-screen-xl">
           <div class="md:flex md:justify-between">
             <div class="mb-6 md:mb-0">
-              <a href="https://flowbite.com" class="flex items-center">
-                <img
-                  src="https://flowbite.com/docs/images/logo.svg"
-                  class="mr-3 h-8"
-                  alt="FlowBite Logo"
-                />
+              <Link to='/home' class="flex items-center">
                 <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
-                  Flowbite
+                  Qr Code Attendance
                 </span>
-              </a>
+              </Link>
             </div>
             <div class="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">
               <div>
@@ -92,13 +112,13 @@ const Home = () => {
                 </h2>
                 <ul class="text-gray-600 dark:text-gray-400">
                   <li class="mb-4">
-                    <a href="https://flowbite.com" class="hover:underline">
-                      Flowbite
+                    <a href="https://google.com" class="hover:underline">
+                      Scan
                     </a>
                   </li>
                   <li>
-                    <a href="https://tailwindcss.com/" class="hover:underline">
-                      Tailwind CSS
+                    <a href="https://google.com/" class="hover:underline">
+                      Qr Code
                     </a>
                   </li>
                 </ul>
@@ -110,7 +130,7 @@ const Home = () => {
                 <ul class="text-gray-600 dark:text-gray-400">
                   <li class="mb-4">
                     <a
-                      href="https://github.com/themesberg/flowbite"
+                      href="https://github.com/RafayFarrukh"
                       class="hover:underline "
                     >
                       Github
@@ -118,7 +138,7 @@ const Home = () => {
                   </li>
                   <li>
                     <a
-                      href="https://discord.gg/4eeurUVvTy"
+                      href="https://discord.com"
                       class="hover:underline"
                     >
                       Discord
@@ -148,9 +168,9 @@ const Home = () => {
           <hr class="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
           <div class="sm:flex sm:items-center sm:justify-between">
             <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400">
-              © 2022{" "}
-              <a href="https://flowbite.com" class="hover:underline">
-                Flowbite™
+              © 2023{" "}
+              <a href="https://qr-attendence-system.vercel.app/" class="hover:underline">
+                Qr Attendance App
               </a>
               . All Rights Reserved.
             </span>

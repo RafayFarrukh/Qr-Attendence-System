@@ -1,15 +1,23 @@
 import axios from "axios";
-let axiosInstance = axios.create({
+
+const axiosInstance = axios.create({
   headers: {
     "Access-Control-Allow-Origin": "*",
     "Content-Type": "application/json",
   },
 });
-axiosInstance.defaults.headers.common["x-auth-token"] = localStorage.getItem(
-  "Token"
-)
-  ? localStorage.getItem("Token")
-  : "";
-axiosInstance.defaults.headers.post["Content-Type"] = "application/json";
+
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("Token");
+    if (token) {
+      config.headers["x-auth-token"] = token;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 export default axiosInstance;

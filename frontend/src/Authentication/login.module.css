@@ -237,10 +237,10 @@ small {
   padding: 10px;
   border: rgb(149, 41, 41);
 
-  padding: 12px 20px;
+  /* padding: 12px 20px; */
   margin: 8px 0;
   display: inline-block;
-  border: 1px solid rgb(219, 219, 219);
+  /* border: 1px solid rgb(219, 219, 219); */
   border-radius: 8px;
   box-sizing: border-box;
 }

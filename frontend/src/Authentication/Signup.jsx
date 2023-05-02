@@ -87,7 +87,8 @@ const Signup = () => {
                         <Field
                           name='fullName'
                           type='text'
-                          className={classes.inputsignup}
+                          className="border border-gray-300 p-3 rounded-lg w-full mt-3 focus:outline-none focus:border-gray-400"
+
                           placeholder='Enter Name Here'
                         />
                       </label>
@@ -99,8 +100,8 @@ const Signup = () => {
                         <span className='ml-2 font-bold'>Email address</span>
                         <Field
                           name='email'
-                          className={classes.inputsignup}
-                          type='email'
+                          className="border border-gray-300 p-3 rounded-lg w-full mt-3 focus:outline-none focus:border-gray-400"
+
                           placeholder='Enter Email here'
                         />
                       </label>
@@ -113,7 +114,7 @@ const Signup = () => {
                         <Field
                           name='password'
                           type='password'
-                          className={classes.inputsignup}
+                          className="border border-gray-300 p-3 rounded-lg w-full mt-3 focus:outline-none focus:border-gray-400"
                           placeholder='Enter Password here'
                         />
                       </label>

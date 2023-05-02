@@ -1,19 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axiosInstance from '../../services/axiosInstance';
 import { useNavigate } from 'react-router-dom';
 
 import axios from 'axios';
 import baseURL from '../../services/BaseURL';
-
+import { UserContext } from '../../App';
 const AllCourses = () => {
   const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
   const [singlecourse, setSinglecourse] = useState();
-  const token = localStorage.getItem('Token');
-
+  const token = localStorage.getItem('Token'); 
+  const { state, dispatch } = useContext(UserContext);
   useEffect(() => {
+    console.log(state,"state in all courses")
     axiosInstance
-      .get(`${baseURL}/api/course/teacher/ShowAllCourses`)
+      .get(`${baseURL}/api/course/teacher/ShowAllCourses`,)
       .then((res) => {
         setSinglecourse(res.data.courseList?.map((course) => course._id));
         // console.log(courseList.map((course) => course.Course));
@@ -22,7 +23,7 @@ const AllCourses = () => {
         //   console.log(res.data.courseList.map((course) => course.Course));
         // console.log(courses);
       });
-  }, [courses]);
+  }, []);
   return (
     <>
       <table class='w-full text-sm text-left text-gray-500 dark:text-gray-400'>
