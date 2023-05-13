@@ -3,7 +3,8 @@ var router = express.Router();
 const Student = require('../../models/Student');
 const Class = require('../../models/Class');
 const Attendance = require('../../models/Attendance');
-
+const moment = require('moment-timezone');
+moment.tz.setDefault('Asia/Karachi');
 
 let takeAttendencestarted = false;
 router.get(
@@ -60,12 +61,18 @@ router.get(
       // }
 
       // Check if attendance has already been marked for the student on the current date
-      const today = new Date().toISOString().slice(0, 10);
-      console.log({
-        ClassId: classInfo._id,
-        stdId: student.stdId,
-        date: today,
-      });
+      // const today = new Date().toISOString().slice(0, 10);
+
+      const today = moment().format('YYYY-MM-DD');
+
+      console.log(
+        {
+          ClassId: classInfo._id,
+          stdId: student.stdId,
+          date: today,
+        },
+        ' attendance object',
+      );
       const existingAttendance = await Attendance.findOne({
         ClassId: classInfo._id,
         stdId: student.stdId,
@@ -226,13 +233,13 @@ router.post('/RealTimeAttendance/:classId', async function (req, res, next) {
   try {
     const classId = req.params.classId;
     const date = req.body.date;
-    // console.log(date,classId)
+    console.log(date, classId);
     if (!date) {
       return res.status(404).json({ message: 'Date not specified' });
     }
     // Find the class by ID
     const classInfo = await Class.findById(classId).exec();
-    // console.log(classInfo)
+    console.log(classInfo);
     // Make sure the class exists
     if (!classInfo) {
       return res.status(404).json({ message: 'Class not found' });
@@ -247,7 +254,7 @@ router.post('/RealTimeAttendance/:classId', async function (req, res, next) {
       date: date,
       // stdId: { $in: studentIds }
     });
-    // console.log(attendance, 'attendance for dates');
+    console.log(attendance, 'attendance for dates');
     // if (!attendance || attendance.length === 0) {
     //   return res
     //     .status(404)
@@ -259,10 +266,10 @@ router.post('/RealTimeAttendance/:classId', async function (req, res, next) {
     let students = [];
     for (const id of studentIds) {
       const student = await Student.findById(id);
-      // console.log(students, 'found student');
+      console.log(students, 'found student');
       students.push(student);
     }
-    // console.log(students,'students Array')
+    console.log(students, 'students Array');
 
     // Update the attendance status to "present" for students who are present
     for (const student of students) {
@@ -272,7 +279,7 @@ router.post('/RealTimeAttendance/:classId', async function (req, res, next) {
       attendanceStatus[record.stdId] = 'present';
       // console.log(record, 'present record--------------');
     }
-    // console.log(attendanceStatus,"attendance")
+    console.log(attendanceStatus, 'attendance');
     // Create an array of attendance objects for all students in the class
     for (const student of students) {
       const status = attendanceStatus[student.stdId];
@@ -299,7 +306,7 @@ router.post('/RealTimeAttendance/:classId', async function (req, res, next) {
     if (takeAttendencestarted === true) {
       global.io.emit('attendanceUpdated', attendanceArray);
     }
-    // console.log(attendanceArray, 'attendance array');
+    console.log(attendanceArray, 'attendance array');
     return res.status(200).json({
       message: 'Attendance found successfully',
       attendance: attendanceArray,
