@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const CourseSchema = mongoose.Schema({
   courseCode: {
@@ -16,4 +16,4 @@ const CourseSchema = mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Course", CourseSchema);
+module.exports = mongoose.model('Course', CourseSchema);

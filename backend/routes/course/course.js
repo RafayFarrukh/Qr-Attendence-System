@@ -1,15 +1,24 @@
-var express = require("express");
+var express = require('express');
 var router = express.Router();
-const Teacher = require("../../models/Teacher");
-const Course = require("../../models/Course");
-const Class = require("../../models/Class");
+const Teacher = require('../../models/Teacher');
+const Course = require('../../models/Course');
+const Class = require('../../models/Class');
 
-router.post("/addCourse", async function (req, res, next) {
+router.post('/addCourse', async function (req, res, next) {
   try {
     const teacher = req.user;
     // console.log(teacher.admin);
 
     if (teacher.admin) {
+      const courseCode = req.body.courseCode;
+      const existingCourse = await Course.findOne({ courseCode });
+
+      if (existingCourse) {
+        return res.status(400).json({
+          message: 'Course code already exists',
+        });
+      }
+
       const newCourse = new Course({
         ...req.body,
       });
@@ -19,12 +28,12 @@ router.post("/addCourse", async function (req, res, next) {
 
       await course_.save();
       res.status(200).json({
-        message: "Course successfully created",
+        message: 'Course successfully created',
         course_,
       });
     } else {
       res.status(401).json({
-        message: "You are not authorized for this action",
+        message: 'You are not authorized for this action',
       });
     }
   } catch (error) {
@@ -33,14 +42,14 @@ router.post("/addCourse", async function (req, res, next) {
     });
   }
 });
-router.get("/showAllCourses", async function (req, res, next) {
+router.get('/showAllCourses', async function (req, res, next) {
   try {
     const teacherEmail = req.user.email;
     // console.log(teacherId);
     let courseList = await Class.find({
-       "teacher.email": teacherEmail,
+      'teacher.email': teacherEmail,
     })
-      .populate("Course._id")
+      .populate('Course._id')
       .exec();
     // console.log(courseList.Course);
     console.log(courseList.map((course) => course.Course));
@@ -49,7 +58,7 @@ router.get("/showAllCourses", async function (req, res, next) {
     // ));
     if (!courseList)
       return res.status(401).json({
-        message: "Teacher is not teaching this class",
+        message: 'Teacher is not teaching this class',
       });
 
     res.status(200).json({
@@ -61,10 +70,12 @@ router.get("/showAllCourses", async function (req, res, next) {
     });
   }
 });
-router.get("/showOneCourse/:id", async function (req, res, next) {
-try {
+router.get('/showOneCourse/:id', async function (req, res, next) {
+  try {
     const classId = req.params.id;
-    const classObj = await Class.findById(classId).populate('Course._id').exec();
+    const classObj = await Class.findById(classId)
+      .populate('Course._id')
+      .exec();
     if (!classObj) {
       return res.status(404).json({ message: 'Class not found' });
     }
@@ -75,22 +86,21 @@ try {
   }
 });
 
-
 // students courses
 
-router.get("/showAllCourses/student", async function (req, res, next) {
+router.get('/showAllCourses/student', async function (req, res, next) {
   try {
     const studentEmail = req.user._id;
 
     let courseList = await Class.find({
-      "students._id": studentEmail,
+      'students._id': studentEmail,
     })
-      .populate("Course._id")
+      .populate('Course._id')
       .exec();
 
     if (!courseList || courseList.length === 0) {
       return res.status(404).json({
-        message: "Student is not enrolled in any class",
+        message: 'Student is not enrolled in any class',
       });
     }
 
@@ -103,6 +113,5 @@ router.get("/showAllCourses/student", async function (req, res, next) {
     });
   }
 });
-
 
 module.exports = router;

@@ -15,6 +15,10 @@ import OneCourse from './components/Courses/OneCourse';
 import TakeAttendance from './components/Attendance/TakeAttendance';
 import ShowAttendance from './components/Attendance/ShowAttendance';
 import AttendancePicker from './components/Attendance/AttendancePicker';
+import CreateClass from './components/Class/CreateClass';
+import CreateCourse from './components/Courses/CreateCourse';
+import TotalClasses from './components/Class/TotalClasses';
+import AddStudents from './components/Class/AddStudents';
 export const UserContext = createContext();
 function App() {
   const navigate = useNavigate();
@@ -63,7 +67,14 @@ function App() {
               <></>
             )}
             <Routes>
+              {/* class */}
+              <Route path='/createClass' element={<CreateClass />} />
+              <Route path='/allClasses' element={<TotalClasses />} />
+              <Route path='/edit-class/:id' element={<AddStudents />} />
+
               <Route path='/home' element={<Home />} />
+              {/* course */}
+              <Route path='/createCourse' element={<CreateCourse />} />
               <Route path='/allcourses' element={<AllCourses />} />
               <Route path='/onecourse/:id' element={<OneCourse />} />
               <Route
