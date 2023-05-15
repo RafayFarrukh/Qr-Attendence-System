@@ -21,7 +21,8 @@ const TakeAttendance = (
   const [socket, setSocket] = useState(null);
   const [attendance, setAttendance] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
-
+  const [showQRCode, setShowQRCode] = useState(false);
+  const [countdown, setCountdown] = useState(180);
   useEffect(() => {
     console.log(selectedDate, 'selected date in take attendance');
     setSelectedDate(currentDate);
@@ -131,7 +132,7 @@ const TakeAttendance = (
     const data = JSON.stringify(data1);
     // setQrText(`Author: ${User.fullName}, Text: ${text}`);
     setQrText(data);
-
+    setShowQRCode(true);
     // --download img
     const svg = document.getElementById('QRCode');
     const svgData = new XMLSerializer().serializeToString(svg);
@@ -152,6 +153,30 @@ const TakeAttendance = (
 
     // ---
   };
+  let timer;
+  useEffect(() => {
+    if (showQRCode) {
+      timer = setInterval(() => {
+        setCountdown((prevCountdown) => prevCountdown - 1);
+      }, 1000);
+
+      return () => {
+        clearInterval(timer);
+        setQrText('');
+        setShowQRCode(false);
+        setCountdown(180);
+      };
+    }
+  }, [showQRCode]);
+
+  useEffect(() => {
+    if (countdown === 0) {
+      clearInterval(timer);
+      setQrText('');
+      setShowQRCode(false);
+      setCountdown(180);
+    }
+  }, [countdown]);
   return (
     <>
       <div className='flex flex-col lg:flex-row mt-9'>
@@ -177,7 +202,18 @@ const TakeAttendance = (
             </button>
           </form>
           {qrText.length > 0 && (
-            <QRCode id='QRCode' className='mt-5' value={qrText} />
+            <>
+              <QRCode id='QRCode' className='mt-5' value={qrText} />
+              <p className='text-center mt-2 text-gray-500'>
+                <span className='text-sm text-gray-600 mr-2'>
+                  QR Code will be removed in
+                </span>
+                <span className='text-lg font-bold text-gray-900'>
+                  {countdown}
+                </span>
+                <span className='text-sm text-gray-600 ml-2'>seconds.</span>
+              </p>
+            </>
           )}
         </div>
         <div className='flex-1 bg-white dark:text-gray-200 dark:bg-secondary-dark-bg h-auto rounded-xl p-8 pt-9 m-3'>

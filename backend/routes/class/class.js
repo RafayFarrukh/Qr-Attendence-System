@@ -27,32 +27,53 @@ router.get('/totalclasses', async function (req, res, next) {
 router.post('/addClass', async function (req, res, next) {
   try {
     const teacher = req.user;
-    // console.log(teacher.admin);
     const courseCode = req.body.courseCode;
     const teacherEmail = req.body.teacher;
+
     if (teacher.admin) {
       const course = await Course.findOne({
         courseCode: courseCode,
       });
+      console.log(course, 'course');
       const teacherInfo = await Teacher.findOne({
         email: teacherEmail,
       });
+
       if (!teacherInfo) {
         return res.status(400).json({
           message: 'Teacher does not exist',
           success: false,
         });
       }
-      if (!course)
+
+      if (!course) {
         return res.status(401).json({
           message: 'Course does not exist',
           success: false,
         });
-      const newClass = new Class({
-        ...req.body,
-        course,
+      }
+
+      const selectedStudents = req.body.students || [];
+      // Fetch the student objects based on the IDs
+      const studentObjects = await Student.find({
+        _id: { $in: selectedStudents },
       });
+
+      // Create a new array with the fetched student objects
+      const students = studentObjects.map((student) => student.toObject());
+      console.log({
+        teacher: teacherEmail,
+        students: students,
+        Course: course._id,
+      });
+      const newClass = new Class({
+        teacher: teacherEmail,
+        students: students,
+        Course: course._id,
+      });
+
       const class_ = await newClass.save();
+
       class_.Course = course;
       class_.teacher = teacherInfo;
       await class_.save();
@@ -63,7 +84,7 @@ router.post('/addClass', async function (req, res, next) {
       });
     } else {
       res.status(401).json({
-        message: 'You are not Authorized for this action',
+        message: 'You are not authorized for this action',
       });
     }
   } catch (error) {
@@ -72,6 +93,7 @@ router.post('/addClass', async function (req, res, next) {
     });
   }
 });
+
 router.post('/addStudents/:id', async function (req, res, next) {
   try {
     const teacher = req.user;
@@ -110,6 +132,42 @@ router.post('/addStudents/:id', async function (req, res, next) {
       });
     }
   } catch (error) {}
+});
+router.post('/batches/create', async function (req, res, next) {
+  try {
+    const students = await Student.find().exec();
+    const batches = new Set(); // Use a Set to store unique batches
+
+    for (let i = 0; i < students.length; i++) {
+      const student = students[i];
+      const { email } = student;
+      const batch = email.substring(0, 8); // Extract the first 8 characters
+
+      batches.add(batch); // Add the batch to the Set
+    }
+
+    res.status(200).json({
+      message: 'Batches successfully created',
+      batches: Array.from(batches), // Convert the Set to an array and include it in the response
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'An error occurred while creating batches',
+      error: error.message,
+    });
+  }
+});
+router.get('/students/batch/:batch', async function (req, res, next) {
+  try {
+    const batch = req.params.batch;
+    const students = await Student.find({
+      email: { $regex: batch, $options: 'i' },
+    }).exec();
+    res.status(200).json({ students });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error occurred while fetching students' });
+  }
 });
 
 module.exports = router;

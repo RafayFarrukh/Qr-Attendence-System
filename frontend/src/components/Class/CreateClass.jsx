@@ -1,14 +1,105 @@
-import { useState } from 'react';
-import axios from 'axios';
-import baseURL from '../../services/BaseURL';
+import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../services/axiosInstance';
+import baseURL from '../../services/BaseURL';
+
 function CreateClass() {
   const [courseCode, setCourseCode] = useState('');
   const [teacherEmail, setTeacherEmail] = useState('');
+  const [teachersList, setTeachersList] = useState([]);
+  const [coursesList, setCoursesList] = useState([]);
   const [message, setMessage] = useState('');
+  const [batches, setBatches] = useState();
+  const [selectedBatch, setSelectedBatch] = useState('');
+  const [studentsList, setStudentsList] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
+  const [selectedStudents, setSelectedStudents] = useState([]);
+  useEffect(() => {
+    // Fetch teachers list
+    const fetchTeachers = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `${baseURL}/api/course/teacher/teachers`,
+        );
+        setTeachersList(response.data.teachers);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    // Fetch courses list
+    const fetchCourses = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `${baseURL}/api/course/teacher/courses`,
+        );
+        console.log(response.data.courses, 'courseslist');
+        setCoursesList(response.data.courses);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchTeachers();
+    fetchCourses();
+  }, []);
+  const fetchStudentsByBatch = async () => {
+    try {
+      // Make a request to the backend API to fetch students by batch
+      const response = await axiosInstance.post(
+        `${baseURL}/api/class/teacher/batches/create`,
+      );
+      console.log(response.data.batches, 'batches');
+      setBatches(response.data.batches);
+
+      const responseStudents = await axiosInstance.get(
+        `${baseURL}/api/class/teacher//students/batch/${selectedBatch}`,
+      );
+      setStudentsList(responseStudents.data.students);
+      console.log(responseStudents.data.students, 'response students');
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
+    fetchStudentsByBatch();
+  }, [selectedBatch]);
+  const handleStudentSelection = (event) => {
+    const studentId = event.target.value;
+    const isChecked = event.target.checked;
+    let updatedSelectedStudents = [];
+
+    if (isChecked) {
+      updatedSelectedStudents = [...selectedStudents, studentId];
+    } else {
+      updatedSelectedStudents = selectedStudents.filter(
+        (id) => id !== studentId,
+      );
+    }
+
+    setSelectedStudents(updatedSelectedStudents);
+    setSelectAll(updatedSelectedStudents.length === studentsList.length);
+  };
+
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedStudents([]);
+    } else {
+      const allStudentIds = studentsList.map((student) => student._id);
+      setSelectedStudents(allStudentIds);
+    }
+    setSelectAll(!selectAll);
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    // Get the selected student IDs
+    const selectedStudents = [];
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach((checkbox) => {
+      if (checkbox.checked) {
+        selectedStudents.push(checkbox.value);
+      }
+    });
 
     try {
       const response = await axiosInstance.post(
@@ -16,6 +107,7 @@ function CreateClass() {
         {
           courseCode,
           teacher: teacherEmail,
+          students: selectedStudents,
         },
       );
 
@@ -64,16 +156,96 @@ function CreateClass() {
           >
             Teacher Email:
           </label>
-          <input
-            type='email'
+          <select
             name='teacherEmail'
             id='teacherEmail'
             value={teacherEmail}
             onChange={(event) => setTeacherEmail(event.target.value)}
             className='border border-gray-400 p-2 w-full rounded-lg'
             required
-          />
+          >
+            <option value=''>Select Teacher</option>
+            {teachersList.map((teacher) => (
+              <option key={teacher._id} value={teacher.email}>
+                {teacher.email}
+              </option>
+            ))}
+          </select>
         </div>
+
+        <div className='mb-4'>
+          <label
+            htmlFor='course'
+            className='block text-gray-700 font-bold mb-2'
+          >
+            Course:
+          </label>
+          <select
+            name='course'
+            id='course'
+            value={courseCode}
+            onChange={(event) => setCourseCode(event.target.value)}
+            className='border border-gray-400 p-2 w-full rounded-lg'
+            required
+          >
+            <option value=''>Select Course</option>
+            {coursesList.map((course) => (
+              <option key={course._id} value={course.courseCode}>
+                {course.courseName}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className='mb-4'>
+          <label htmlFor='batch' className='block text-gray-700 font-bold mb-2'>
+            Batch:
+          </label>
+          <select
+            name='batch'
+            id='batch'
+            value={selectedBatch}
+            onChange={(event) => setSelectedBatch(event.target.value)}
+            className='border border-gray-400 p-2 w-full rounded-lg'
+            required
+          >
+            <option value=''>Select Batch</option>
+            {batches?.map?.((course) => (
+              <option key={course._id} value={course.courseCode}>
+                {course}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className='mb-4'>
+          <label className='block text-gray-700 font-bold mb-2'>
+            Select Students:
+          </label>
+          <div className='flex flex-col'>
+            <label className='flex items-center mb-2'>
+              <input
+                type='checkbox'
+                checked={selectAll}
+                onChange={handleSelectAll}
+                className='mr-2'
+              />
+              Select All
+            </label>
+            {studentsList?.map?.((student) => (
+              <label key={student._id} className='flex items-center mb-2'>
+                <input
+                  type='checkbox'
+                  value={student._id}
+                  onChange={handleStudentSelection}
+                  checked={selectedStudents.includes(student._id)}
+                  className='mr-2'
+                />
+                {student.email}
+              </label>
+            ))}
+          </div>
+        </div>
+
         <button
           type='submit'
           className='bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-700'

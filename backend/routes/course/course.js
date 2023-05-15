@@ -113,5 +113,22 @@ router.get('/showAllCourses/student', async function (req, res, next) {
     });
   }
 });
+router.get('/teachers', async function (req, res, next) {
+  try {
+    const teachers = await Teacher.find().exec();
+    res.status(200).json({ teachers });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch teachers' });
+  }
+});
 
+// Fetch courses
+router.get('/courses', async function (req, res, next) {
+  try {
+    const courses = await Course.find().exec();
+    res.status(200).json({ courses });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch courses' });
+  }
+});
 module.exports = router;
