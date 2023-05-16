@@ -4,6 +4,62 @@ const Teacher = require('../../models/Teacher');
 const Course = require('../../models/Course');
 const Class = require('../../models/Class');
 
+const xlsx = require('xlsx');
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
+
+// Read the uploaded Excel file and save courses to the database
+router.post('/register/excel', upload.single('file'), (req, res) => {
+  try {
+    const teacher = req.user;
+    // Read the uploaded Excel file
+    if (teacher?.admin) {
+      const workbook = xlsx.readFile(req.file.path);
+      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+
+      // Convert the Excel data to JSON
+      const coursesData = xlsx.utils.sheet_to_json(worksheet);
+
+      // Save each course to the database
+      const courses = coursesData.map((courseData) => {
+        // Create a new course object
+        const course = new Course({
+          courseCode: courseData.courseCode,
+          courseShortName: courseData.courseShortName,
+          courseName: courseData.courseName,
+        });
+
+        // Save the course to the database
+        return course.save();
+      });
+
+      // Wait for all the course saving promises to resolve
+      Promise.all(courses)
+        .then((savedCourses) => {
+          // Filter out any null values (failed course saves)
+          const validCourses = savedCourses.filter((course) => course !== null);
+
+          return res.status(200).json({
+            message: 'Courses registered successfully',
+            courses: validCourses,
+            success: true,
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+          return res.status(500).json({ message: 'Internal server error' });
+        });
+    } else {
+      res.status(401).json({
+        message: 'You are not authorized for this action',
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 router.post('/addCourse', async function (req, res, next) {
   try {
     const teacher = req.user;

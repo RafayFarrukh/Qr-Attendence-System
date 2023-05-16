@@ -4,8 +4,56 @@ const Student = require('../../models/Student');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
-
+const xlsx = require('xlsx');
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 // Read the image file from disk
+router.post('/register/excel', upload.single('file'), (req, res) => {
+  try {
+    // Read the uploaded Excel file
+    const workbook = xlsx.readFile(req.file.path);
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+
+    // Convert the Excel data to JSON
+    const studentsData = xlsx.utils.sheet_to_json(worksheet);
+
+    // Save each student to the database
+    const students = studentsData.map((studentData) => {
+      // Create a new student object
+      const student = new Student({
+        stdId: studentData.stdId,
+        email: studentData.email,
+        password: studentData.password,
+        fullName: studentData.fullName,
+      });
+
+      // Save the student to the database
+      return student.save();
+    });
+
+    // Wait for all the student saving promises to resolve
+    Promise.all(students)
+      .then((savedStudents) => {
+        // Filter out any null values (failed student saves)
+        const validStudents = savedStudents.filter(
+          (student) => student !== null,
+        );
+
+        return res.status(200).json({
+          message: 'Students registered successfully',
+          students: validStudents,
+          success: true,
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        return res.status(500).json({ message: 'Internal server error' });
+      });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 router.post('/register', async function (req, res, next) {
   const { fullName, email, password, stdId, imageUrl, studentImage } = req.body;

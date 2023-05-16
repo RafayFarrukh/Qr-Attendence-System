@@ -18,6 +18,7 @@ const TakeAttendance = (
   const classId = localStorage.getItem('classId');
 
   const { state } = useContext(UserContext);
+  const [generateDisabled, setGenerateDisabled] = useState(false);
   const [socket, setSocket] = useState(null);
   const [attendance, setAttendance] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -31,9 +32,12 @@ const TakeAttendance = (
   const year = date?.getFullYear();
   const month = date?.getMonth() + 1;
   const day = date?.getDate();
+  const hours = date?.getHours();
+  const minutes = date?.getMinutes();
+  const seconds = date?.getSeconds();
   const formattedDate = `${year}-${month?.toString().padStart(2, '0')}-${day
     ?.toString()
-    .padStart(2, '0')}`;
+    .padStart(2, '0')} ${hours?.toString().padStart(2, '0')}:`;
 
   // const classId = props;
 
@@ -83,6 +87,7 @@ const TakeAttendance = (
         },
       )
       .then((res) => {
+        console.log(formattedDate, 'formatted date');
         console.log(res.data.attendance, 'res data');
         setAttendance(res.data.attendance);
         // attendance = res.data.attendance;
@@ -120,12 +125,14 @@ const TakeAttendance = (
       }),
     );
   };
-
+  useEffect(() => {
+    console.log(attendance, 'attendance----------');
+  }, []);
   const submit = async (e) => {
     e.preventDefault();
     // e.target.reset();
     const timestamp = Date.now();
-
+    console.log(timestamp, 'timestamp');
     const teacherId = state?.user?._id;
     const classId = localStorage.getItem('classId');
     const data1 = { classId, teacherId, timestamp };
@@ -156,6 +163,7 @@ const TakeAttendance = (
   let timer;
   useEffect(() => {
     if (showQRCode) {
+      setGenerateDisabled(true);
       timer = setInterval(() => {
         setCountdown((prevCountdown) => prevCountdown - 1);
       }, 1000);
@@ -196,7 +204,10 @@ const TakeAttendance = (
             <button
               type='submit'
               onClick={submit}
-              className='bg-sky-600 hover:bg-sky-300 text-black font-bold py-2 px-4 rounded'
+              disabled={generateDisabled}
+              className={`bg-sky-600 hover:bg-sky-300 text-black font-bold py-2 px-4 rounded ${
+                generateDisabled ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
             >
               Generate
             </button>
@@ -220,6 +231,26 @@ const TakeAttendance = (
           <h2 className='text-lg font-bold mb-4 text-gray-800'>
             Student Attendance
           </h2>
+          <div className='flex justify-between mb-4'>
+            <div className='flex items-center whitespace-nowrap'>
+              <h3 className='text-gray-600 text-md font-semibold'>
+                Total Students:{' '}
+                <span className='text-gray-900'>{attendance.length}</span>
+              </h3>
+            </div>
+            <div className='flex items-center whitespace-nowrap'>
+              <h3 className='text-green-600 text-md font-semibold'>
+                Present Students:{' '}
+                <span className='text-green-900'>
+                  {
+                    attendance.filter((student) => student.status === 'present')
+                      .length
+                  }
+                </span>
+              </h3>
+            </div>
+          </div>
+
           <table className='w-full text-sm text-left text-gray-500 dark:text-gray-400'>
             <thead className='text-xs text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-400'>
               <tr>
@@ -235,7 +266,6 @@ const TakeAttendance = (
               </tr>
             </thead>
             <tbody>
-              {/* Replace this with the actual attendance data */}
               {attendance.map((student, index) => (
                 <tr className='border-b border-gray-200 dark:border-gray-700'>
                   <td className='py-4 px-6'>{student.stdId}</td>

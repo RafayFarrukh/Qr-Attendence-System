@@ -63,7 +63,7 @@ router.get(
       // Check if attendance has already been marked for the student on the current date
       // const today = new Date().toISOString().slice(0, 10);
 
-      const today = moment().format('YYYY-MM-DD');
+      const today = moment().format('YYYY-MM-DD HH:');
 
       console.log(
         {
@@ -148,7 +148,7 @@ router.post('/attendance/:classId', async function (req, res, next) {
   try {
     const classId = req.params.classId;
     const date = req.body.date;
-    // console.log(date,classId)
+    console.log(date,classId,"date and class id")
     if (!date) {
       return res.status(404).json({ message: 'Date not specified' });
     }
@@ -233,7 +233,7 @@ router.post('/RealTimeAttendance/:classId', async function (req, res, next) {
   try {
     const classId = req.params.classId;
     const date = req.body.date;
-    console.log(date, classId);
+    console.log(date, classId,"date and class id");
     if (!date) {
       return res.status(404).json({ message: 'Date not specified' });
     }
