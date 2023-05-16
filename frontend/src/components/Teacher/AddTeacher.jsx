@@ -4,7 +4,7 @@ import axiosInstance from '../../services/axiosInstance';
 import baseURL from '../../services/BaseURL';
 import { toast } from 'react-toastify';
 
-const CreateCourse = () => {
+const AddTeacher = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = useRef(null);
   const handleFileChange = (event) => {
@@ -22,7 +22,7 @@ const CreateCourse = () => {
       },
     };
     axiosInstance
-      .post(`${baseURL}/api/course/teacher/register/excel`, formData, config)
+      .post(`${baseURL}/api/auth/teacher/register/excel`, formData, config)
       .then((response) => {
         console.log(response.data, 'response');
 
@@ -68,4 +68,4 @@ const CreateCourse = () => {
   );
 };
 
-export default CreateCourse;
+export default AddTeacher;

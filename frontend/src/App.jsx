@@ -19,6 +19,9 @@ import CreateClass from './components/Class/CreateClass';
 import CreateCourse from './components/Courses/CreateCourse';
 import TotalClasses from './components/Class/TotalClasses';
 import AddStudents from './components/Class/AddStudents';
+import AddTeacher from './components/Teacher/AddTeacher';
+import AllTeachers from './components/Teacher/AllTeachers';
+import AdminAllCourses from './components/Courses/AdminAllCourses';
 export const UserContext = createContext();
 function App() {
   const navigate = useNavigate();
@@ -71,11 +74,15 @@ function App() {
               <Route path='/createClass' element={<CreateClass />} />
               <Route path='/allClasses' element={<TotalClasses />} />
               <Route path='/edit-class/:id' element={<AddStudents />} />
+              {/* teachher */}
+              <Route path='/addTeachers' element={<AddTeacher />} />
+              <Route path='/allTeachers' element={<AllTeachers />} />
 
               <Route path='/home' element={<Home />} />
               {/* course */}
               <Route path='/createCourse' element={<CreateCourse />} />
               <Route path='/allcourses' element={<AllCourses />} />
+              <Route path='/adminAllCourses' element={<AdminAllCourses />} />
               <Route path='/onecourse/:id' element={<OneCourse />} />
               <Route
                 path='/takeAttendance'

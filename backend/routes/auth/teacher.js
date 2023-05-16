@@ -11,6 +11,11 @@ const apiauth = require('../../middleware/apiAuth');
 router.post('/register/excel', apiauth, upload.single('file'), (req, res) => {
   try {
     const teacher = req.user;
+    console.log('xlsx  teacher eing hit');
+    if (!req.file) {
+      console.log('no file');
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
     console.log(teacher);
     // Read the uploaded Excel file
     if (teacher?.admin) {
@@ -24,6 +29,7 @@ router.post('/register/excel', apiauth, upload.single('file'), (req, res) => {
       // Save each teacher to the database
       const teachers = teachersData.map((teacherData) => {
         // Create a new teacher object
+
         const teacher = new Teacher({
           fullName: teacherData.fullName,
           email: teacherData.email,
@@ -51,7 +57,7 @@ router.post('/register/excel', apiauth, upload.single('file'), (req, res) => {
         })
         .catch((error) => {
           console.error(error);
-          return res.status(500).json({ message: 'Internal server error' });
+          return res.status(500).json({ message: 'An Error Occured' });
         });
     } else {
       res.status(401).json({
@@ -60,7 +66,7 @@ router.post('/register/excel', apiauth, upload.single('file'), (req, res) => {
     }
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ message: 'Same Teacher cant be inserted' });
   }
 });
 
@@ -109,6 +115,7 @@ router.post('/login', async function (req, res, next) {
       req.body.password,
       teacher.password,
     );
+    // const validPassword = req.body.password == teacher.password;
     if (!validPassword) {
       return res
         .status(404)
@@ -128,6 +135,29 @@ router.post('/login', async function (req, res, next) {
     const { _id, fullName, email, admin } = teacher;
 
     res.status(201).json({ teacher: { _id, fullName, email, admin }, token });
+  }
+});
+
+router.get('/all', async (req, res) => {
+  try {
+    // Fetch all teachers from the database
+    const teacher = req.user;
+    // if (teacher?.admin) {
+    const teachers = await Teacher.find();
+
+    return res.status(200).json({
+      teachers,
+      success: true,
+    });
+  } catch (error) {
+    //   else {
+    //     res.status(401).json({
+    //       message: 'You are not authorized for this action',
+    //     });
+    //   }
+    // }
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 });
 module.exports = router;

@@ -6,10 +6,15 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const xlsx = require('xlsx');
 const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ dest: '.././uploads/' });
 // Read the image file from disk
 router.post('/register/excel', upload.single('file'), (req, res) => {
   try {
+    console.log('xlsx eing hit');
+    if (!req.file) {
+      console.log('no file');
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
     // Read the uploaded Excel file
     const workbook = xlsx.readFile(req.file.path);
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
