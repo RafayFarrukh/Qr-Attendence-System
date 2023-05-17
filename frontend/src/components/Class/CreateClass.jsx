@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../services/axiosInstance';
 import baseURL from '../../services/BaseURL';
+import { toast } from 'react-toastify';
+import * as Loader from 'react-loader-spinner';
 
 function CreateClass() {
   const [courseCode, setCourseCode] = useState('');
@@ -12,6 +14,8 @@ function CreateClass() {
   const [selectedBatch, setSelectedBatch] = useState('');
   const [studentsList, setStudentsList] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const [selectedStudents, setSelectedStudents] = useState([]);
   useEffect(() => {
     // Fetch teachers list
@@ -91,16 +95,19 @@ function CreateClass() {
   };
 
   const handleSubmit = async (event) => {
+    setLoading(true);
     event.preventDefault();
     // Get the selected student IDs
     const selectedStudents = [];
     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
     checkboxes.forEach((checkbox) => {
-      if (checkbox.checked) {
+      console.log(checkbox.value, 'checkbbox');
+      if (checkbox.checked && checkbox.value != 'on') {
         selectedStudents.push(checkbox.value);
       }
     });
 
+    console.log(selectedStudents, 'selected students');
     try {
       const response = await axiosInstance.post(
         `${baseURL}/api/class/teacher/addClass`,
@@ -110,16 +117,24 @@ function CreateClass() {
           students: selectedStudents,
         },
       );
-
+      toast.success('Successfully Created Class', {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 1000,
+      });
       const { message: responseMessage, class_ } = response.data;
-
-      setMessage(responseMessage);
+      // setMessage(responseMessage);
       setCourseCode('');
       setTeacherEmail('');
-
+      setSelectedStudents([]);
+      setBatches();
+      setSelectedBatch('');
+      setStudentsList([]);
+      setSelectAll(false);
+      setLoading(false);
       console.log(class_);
     } catch (error) {
       console.error(error, 'eror');
+      setLoading(false);
       setMessage(error.response.data.message);
     }
   };
@@ -250,7 +265,16 @@ function CreateClass() {
           type='submit'
           className='bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-700'
         >
-          Create Class
+          {loading ? (
+            <Loader.TailSpin
+              type='ThreeDots'
+              color='#fff'
+              height={25}
+              width={30}
+            />
+          ) : (
+            'Create Class'
+          )}
         </button>
       </form>
     </div>

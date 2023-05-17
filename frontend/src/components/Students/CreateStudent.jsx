@@ -3,11 +3,8 @@ import axios from 'axios';
 import axiosInstance from '../../services/axiosInstance';
 import baseURL from '../../services/BaseURL';
 import { toast } from 'react-toastify';
-import * as Loader from 'react-loader-spinner';
 
-const CreateCourse = () => {
-  const [loading, setLoading] = useState(false);
-
+const CreateStudents = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = useRef(null);
   const handleFileChange = (event) => {
@@ -15,7 +12,6 @@ const CreateCourse = () => {
   };
 
   const handleUpload = () => {
-    setLoading(true);
     const formData = new FormData();
     formData.append('file', selectedFile);
     console.log(selectedFile, 'selectedFile'); // Check the value of selectedFile
@@ -25,11 +21,11 @@ const CreateCourse = () => {
         'Content-Type': 'multipart/form-data',
       },
     };
-    axiosInstance
-      .post(`${baseURL}/api/course/teacher/register/excel`, formData, config)
+    axios
+      .post(`${baseURL}/api/auth/student/register/excel`, formData, config)
       .then((response) => {
         console.log(response.data, 'response');
-        setLoading(false);
+
         setSelectedFile(null);
         toast.success('Successfully Uploaded', {
           position: toast.POSITION.TOP_RIGHT,
@@ -38,8 +34,6 @@ const CreateCourse = () => {
         // Handle success response
       })
       .catch((error) => {
-        setLoading(false);
-
         toast.error(error.response.data.message, {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 2000,
@@ -68,19 +62,10 @@ const CreateCourse = () => {
         onClick={handleUpload}
         // disabled={!selectedFile}
       >
-        {loading ? (
-          <Loader.TailSpin
-            type='ThreeDots'
-            color='#fff'
-            height={25}
-            width={30}
-          />
-        ) : (
-          'Upload'
-        )}
+        Upload
       </button>
     </div>
   );
 };
 
-export default CreateCourse;
+export default CreateStudents;

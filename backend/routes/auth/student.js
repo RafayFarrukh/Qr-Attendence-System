@@ -52,11 +52,13 @@ router.post('/register/excel', upload.single('file'), (req, res) => {
       })
       .catch((error) => {
         console.error(error);
-        return res.status(500).json({ message: 'Internal server error' });
+        return res
+          .status(500)
+          .json({ message: 'Same Student cant be inserted' });
       });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ message: 'Same Student cant be inserted' });
   }
 });
 
@@ -242,6 +244,20 @@ router.post('/login', async function (req, res, next) {
     res
       .status(201)
       .json({ user: { _id, fullName, email, stdId }, token, success: true });
+  }
+});
+
+router.get('/all', async (req, res) => {
+  try {
+    const teachers = await Student.find();
+
+    return res.status(200).json({
+      teachers,
+      success: true,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 });
 module.exports = router;

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { UserContext } from '../../App';
-// import './TakeAttendance.css'
+import * as Loader from 'react-loader-spinner';
+
 import axios from 'axios';
 import axiosInstance from '../../services/axiosInstance';
 import QRCode from 'react-qr-code';
@@ -15,6 +16,8 @@ const TakeAttendance = (
   { setQrText, qrText, currentDate, setCurrentDate },
   props,
 ) => {
+  const [loading, setLoading] = useState(false);
+
   const classId = localStorage.getItem('classId');
 
   const { state } = useContext(UserContext);
@@ -78,7 +81,7 @@ const TakeAttendance = (
   useEffect(() => {
     console.log('in hte useEffect');
     // setSelectedDate(currentDate);
-
+    setLoading(true);
     axiosInstance
       .post(
         `${baseURL}/api/class/teacher/attendance/RealTimeAttendance/${classId}`,
@@ -90,6 +93,7 @@ const TakeAttendance = (
         console.log(formattedDate, 'formatted date');
         console.log(res.data.attendance, 'res data');
         setAttendance(res.data.attendance);
+        setLoading(false);
         // attendance = res.data.attendance;
       })
       .catch((res) => {});
@@ -266,48 +270,67 @@ const TakeAttendance = (
               </tr>
             </thead>
             <tbody>
-              {attendance.map((student, index) => (
-                <tr className='border-b border-gray-200 dark:border-gray-700'>
-                  <td className='py-4 px-6'>{student.stdId}</td>
-                  <td className='py-4 px-6'>{student.fullName}</td>
-                  <td className='py-4 px-6'>
-                    <div className='flex items-center'>
-                      <input
-                        id={student.stdId}
-                        type='checkbox'
-                        className='hidden'
-                        checked={
-                          isChecked.find((s) => s.stdId === student.stdId)
-                            ?.isChecked
-                        }
-                        onChange={() => handleCheckboxClick(student.stdId)}
-                      />
-                      <label
-                        htmlFor={student.stdId}
-                        className='flex items-center cursor-pointer'
-                      >
-                        <div className='relative'>
-                          <div className='block bg-gray-600 w-12 h-6 rounded-full'></div>
-                          <div
-                            className={`${
-                              isChecked.find((s) => s.stdId === student.stdId)
-                                ?.isChecked
-                                ? 'translate-x-6 bg-green-400'
-                                : 'translate-x-0 bg-white'
-                            } absolute left-0 top-0 w-6 h-6 rounded-full shadow-md transform transition-all duration-300`}
-                          ></div>
-                        </div>
-                        <span className='ml-2'>
-                          {isChecked.find((s) => s.stdId === student.stdId)
-                            ?.isChecked
-                            ? 'Present'
-                            : 'Absent'}
-                        </span>
-                      </label>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {loading ? (
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '400px',
+                    left: '100px',
+                  }}
+                >
+                  <Loader.TailSpin
+                    type='ThreeDots'
+                    color='black'
+                    height={150}
+                    width={150}
+                  />
+                </div>
+              ) : (
+                attendance.map((student, index) => (
+                  <tr className='border-b border-gray-200 dark:border-gray-700'>
+                    <td className='py-4 px-6'>{student.stdId}</td>
+                    <td className='py-4 px-6'>{student.fullName}</td>
+                    <td className='py-4 px-6'>
+                      <div className='flex items-center'>
+                        <input
+                          id={student.stdId}
+                          type='checkbox'
+                          className='hidden'
+                          checked={
+                            isChecked.find((s) => s.stdId === student.stdId)
+                              ?.isChecked
+                          }
+                          onChange={() => handleCheckboxClick(student.stdId)}
+                        />
+                        <label
+                          htmlFor={student.stdId}
+                          className='flex items-center cursor-pointer'
+                        >
+                          <div className='relative'>
+                            <div className='block bg-gray-600 w-12 h-6 rounded-full'></div>
+                            <div
+                              className={`${
+                                isChecked.find((s) => s.stdId === student.stdId)
+                                  ?.isChecked
+                                  ? 'translate-x-6 bg-green-400'
+                                  : 'translate-x-0 bg-white'
+                              } absolute left-0 top-0 w-6 h-6 rounded-full shadow-md transform transition-all duration-300`}
+                            ></div>
+                          </div>
+                          <span className='ml-2'>
+                            {isChecked.find((s) => s.stdId === student.stdId)
+                              ?.isChecked
+                              ? 'Present'
+                              : 'Absent'}
+                          </span>
+                        </label>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

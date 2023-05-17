@@ -3,9 +3,11 @@ import axiosInstance from '../../services/axiosInstance';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { UserContext } from '../../App';
 import baseURL from '../../services/BaseURL';
+import * as Loader from 'react-loader-spinner';
 
 const OneCourse = () => {
   const { state, dispatch } = useContext(UserContext);
+  const [loading, setLoading] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -15,6 +17,8 @@ const OneCourse = () => {
   var id = split[2];
   useEffect(() => {
     console.log(state);
+    setLoading(true);
+
     axiosInstance
       .get(`${baseURL}/api/course/teacher/showOneCourse/${id}`)
       .then((res) => {
@@ -22,6 +26,7 @@ const OneCourse = () => {
         localStorage.setItem('classId', id);
         dispatch({ type: 'FetchClassId', payload: id });
         setCourse(res.data.classObj);
+        setLoading(false);
       });
   }, [course]);
   useEffect(() => {

@@ -34,7 +34,7 @@ router.post('/addClass', async function (req, res, next) {
       const course = await Course.findOne({
         courseCode: courseCode,
       });
-      console.log(course, 'course');
+      console.log(course, 'course we are in create classs');
       const teacherInfo = await Teacher.findOne({
         email: teacherEmail,
       });
@@ -54,6 +54,7 @@ router.post('/addClass', async function (req, res, next) {
       }
 
       const selectedStudents = req.body.students || [];
+      console.log(selectedStudents, 'selectedStudents');
       // Fetch the student objects based on the IDs
       const studentObjects = await Student.find({
         _id: { $in: selectedStudents },
@@ -61,6 +62,7 @@ router.post('/addClass', async function (req, res, next) {
 
       // Create a new array with the fetched student objects
       const students = studentObjects.map((student) => student.toObject());
+      console.log(students, 'studentss in class------');
       console.log({
         teacher: teacherEmail,
         students: students,

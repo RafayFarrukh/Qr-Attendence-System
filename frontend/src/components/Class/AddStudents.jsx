@@ -3,6 +3,9 @@ import { useParams } from 'react-router-dom';
 import axiosInstance from '../../services/axiosInstance';
 import baseURL from '../../services/BaseURL';
 import { useLocation } from 'react-router-dom';
+
+import { toast } from 'react-toastify';
+
 function AddStudentsToClass() {
   const location = useLocation();
   const classId = location.pathname.split('/')[2];
@@ -17,8 +20,17 @@ function AddStudentsToClass() {
         `${baseURL}/api/class/teacher/addStudents/${classId}`,
         { username },
       );
-      setMessage(response.data.message);
+      setUsername('');
+      // setMessage(response.data.message);
+      toast.success('Successfully Created Class', {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 1000,
+      });
     } catch (error) {
+      toast.error(error.message, {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 1000,
+      });
       setMessage(error.message);
     }
   };

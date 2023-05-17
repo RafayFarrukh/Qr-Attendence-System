@@ -21,6 +21,8 @@ import TotalClasses from './components/Class/TotalClasses';
 import AddStudents from './components/Class/AddStudents';
 import AddTeacher from './components/Teacher/AddTeacher';
 import AllTeachers from './components/Teacher/AllTeachers';
+import CreateStudents from './components/Students/CreateStudent';
+import AllStudentsAdmin from './components/Students/AllStudentsAdmin';
 import AdminAllCourses from './components/Courses/AdminAllCourses';
 export const UserContext = createContext();
 function App() {
@@ -77,6 +79,8 @@ function App() {
               {/* teachher */}
               <Route path='/addTeachers' element={<AddTeacher />} />
               <Route path='/allTeachers' element={<AllTeachers />} />
+              <Route path='/addStudents' element={<CreateStudents />} />
+              <Route path='/allStudentsAdmin' element={<AllStudentsAdmin />} />
 
               <Route path='/home' element={<Home />} />
               {/* course */}

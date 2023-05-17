@@ -93,9 +93,6 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
               >
                 •••
               </span>
-              <span className='lg:hidden lg:sidebar-expanded:block 2xl:block'>
-                Pages
-              </span>
             </h3>
             <ul className='mt-3'>
               {/* Dashboard */}
@@ -103,7 +100,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                 <div>
                   <SidebarLinkGroup
                     activecondition={
-                      pathname === '/' || pathname.includes('dashboard')
+                      pathname === '/' || pathname.includes('Class')
                     }
                   >
                     {(handleClick, open) => {
@@ -251,6 +248,81 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                       );
                     }}
                   </SidebarLinkGroup>
+                  <SidebarLinkGroup
+                    activecondition={
+                      pathname === '/' || pathname.includes('Students')
+                    }
+                  >
+                    {(handleClick, open) => {
+                      return (
+                        <React.Fragment>
+                          <a
+                            href='#0'
+                            className={`block text-slate-200 hover:text-white truncate transition duration-150 ${
+                              (pathname === '/' ||
+                                pathname.includes('dashboard')) &&
+                              'hover:text-slate-200'
+                            }`}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              sidebarExpanded
+                                ? handleClick()
+                                : setSidebarExpanded(true);
+                            }}
+                          >
+                            <div className='flex items-center justify-between'>
+                              <div className='flex items-center'>
+                                <TiHome />
+                                <span className='text-sm font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200'>
+                                  Students
+                                </span>
+                              </div>
+
+                              <div className='flex shrink-0 ml-2'>
+                                <svg
+                                  className={`w-3 h-3 shrink-0 ml-1 fill-current text-slate-400 ${
+                                    open && 'rotate-180'
+                                  }`}
+                                  viewBox='0 0 12 12'
+                                >
+                                  <path d='M5.9 11.4L.5 6l1.4-1.4 4 4 4-4L11.3 6z' />
+                                </svg>
+                              </div>
+                            </div>
+                          </a>
+                          <div className='lg:hidden lg:sidebar-expanded:block 2xl:block'>
+                            <ul className={`pl-9 mt-1 ${!open && 'hidden'}`}>
+                              <li className='mb-1 last:mb-0'>
+                                <NavLink
+                                  end
+                                  to='/addStudents'
+                                  className={({ isActive }) =>
+                                    'block text-slate-400 hover:text-slate-200 transition duration-150 truncate ' +
+                                    (isActive ? '!text-indigo-500' : '')
+                                  }
+                                >
+                                  <span className='text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200'>
+                                    Add Students
+                                  </span>
+                                </NavLink>
+                              </li>
+                              <li className='mb-1 last:mb-0'>
+                                <NavLink
+                                  end
+                                  to='/allStudentsAdmin'
+                                  className='block text-slate-400 hover:text-slate-200 transition duration-150 truncate'
+                                >
+                                  <span className='text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200'>
+                                    All Studentss
+                                  </span>
+                                </NavLink>
+                              </li>
+                            </ul>
+                          </div>
+                        </React.Fragment>
+                      );
+                    }}
+                  </SidebarLinkGroup>
                 </div>
               )}
               {/* E-Commerce */}
@@ -347,9 +419,6 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                 aria-hidden='true'
               >
                 •••
-              </span>
-              <span className='lg:hidden lg:sidebar-expanded:block 2xl:block'>
-                More
               </span>
             </h3>
             <ul className='mt-3'>

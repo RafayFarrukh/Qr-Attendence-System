@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import baseURL from '../../services/BaseURL';
-import axiosInstance from '../../services/axiosInstance';
 import * as Loader from 'react-loader-spinner';
-
-const AdminAllCourses = () => {
+const AllStudentsAdmin = () => {
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -16,20 +14,19 @@ const AdminAllCourses = () => {
     try {
       setLoading(true);
 
-      const response = await axiosInstance.get(
-        `${baseURL}/api/course/teacher/courses`,
-      );
-      setTeachers(response.data.courses);
+      const response = await axios.get(`${baseURL}/api/auth/student/all`);
+      setTeachers(response.data.teachers);
       setLoading(false);
     } catch (error) {
       setLoading(false);
+
       console.error(error);
     }
   };
 
   return (
     <div className='container mx-auto mt-10'>
-      <h1 className='text-2xl font-bold mb-4'>Courses</h1>
+      <h1 className='text-2xl font-bold mb-4'>Students</h1>
       {loading ? (
         <div
           style={{
@@ -51,27 +48,27 @@ const AdminAllCourses = () => {
           <thead>
             <tr>
               <th className='px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase border-b border-gray-300'>
-                Course Code
+                Student Id
               </th>
               <th className='px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase border-b border-gray-300'>
-                Course Short Name
+                Email
               </th>
               <th className='px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase border-b border-gray-300'>
-                Course Full Name
+                fullName
               </th>
             </tr>
           </thead>
           <tbody>
-            {teachers?.map?.((teacher) => (
+            {teachers.map((teacher) => (
               <tr key={teacher._id}>
                 <td className='px-6 py-4 border-b border-gray-300'>
-                  {teacher.courseCode}
+                  {teacher.stdId}
                 </td>
                 <td className='px-6 py-4 border-b border-gray-300'>
-                  {teacher.courseShortName}
+                  {teacher.email}
                 </td>
                 <td className='px-6 py-4 border-b border-gray-300'>
-                  {teacher.courseName}
+                  {teacher.fullName}
                 </td>
               </tr>
             ))}
@@ -82,4 +79,4 @@ const AdminAllCourses = () => {
   );
 };
 
-export default AdminAllCourses;
+export default AllStudentsAdmin;
