@@ -129,6 +129,11 @@ router.post('/addStudents/:id', async function (req, res, next) {
           students[i].save();
         }
       }
+      if (classInfo.students.length === studentsArray.length) {
+        return res.status(400).json({
+          message: 'Students are already added',
+        });
+      }
       // console.log(classInfo);
       await classInfo.save();
       res.status(200).json({
