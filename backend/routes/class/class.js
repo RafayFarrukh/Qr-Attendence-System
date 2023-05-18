@@ -102,13 +102,20 @@ router.post('/addStudents/:id', async function (req, res, next) {
     const id = req.params.id;
     if (teacher.admin) {
       const classInfo = await Class.findById(id).exec();
-      console.log(classInfo);
+
       const studentsArray = classInfo.students;
-      console.log(studentsArray, 'studentsarray');
+
       const { username } = req.body;
       const students = await Student.find({
         email: { $regex: username, $options: 'i' },
       });
+      if (students.length == 0) {
+        console.log('studnt null');
+        res.status(400).json({
+          message: 'No Student Found',
+        });
+      }
+      console.log(students.length, '-----------> student');
       for (let i = 0; i < students.length; i++) {
         let studentExists = false;
         for (let j = 0; j < studentsArray.length; j++) {
@@ -122,7 +129,7 @@ router.post('/addStudents/:id', async function (req, res, next) {
           students[i].save();
         }
       }
-      console.log(classInfo);
+      // console.log(classInfo);
       await classInfo.save();
       res.status(200).json({
         message: 'Students successfully added',
@@ -172,4 +179,38 @@ router.get('/students/batch/:batch', async function (req, res, next) {
   }
 });
 
+router.get('/class/:classId/students', async (req, res) => {
+  try {
+    const { classId } = req.params;
+
+    // Find the class by classId and populate the students field
+    const classObj = await Class.findById(classId);
+    // console.log(classObj, '------> class obj');
+    if (!classObj) {
+      return res.status(404).json({ message: 'Class not found' });
+    }
+    const students = classObj.students.map((student) => student);
+    // const students = classObj.students.map((student) =>
+    //   Student.findById(student._id),
+    // );
+    const _students = students.map((student) => student._id);
+
+    // Find students by their object IDs
+    const foundStudents = [];
+    for (let i = 0; i < _students.length; i++) {
+      const studentId = _students[i];
+      const student = await Student.findById(studentId).select('-password');
+      if (student) {
+        foundStudents.push(student);
+      }
+    }
+
+    // console.log(foundStudents, '------> students obj');
+
+    res.status(200).json({ foundStudents });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 module.exports = router;

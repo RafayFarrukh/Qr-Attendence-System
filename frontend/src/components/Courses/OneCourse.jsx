@@ -16,7 +16,7 @@ const OneCourse = () => {
   const split = location.pathname.split('/');
   var id = split[2];
   useEffect(() => {
-    console.log(state);
+    console.log(id, 'od');
     setLoading(true);
 
     axiosInstance

@@ -22,8 +22,9 @@ const AllCourses = () => {
       .get(`${baseURL}/api/course/teacher/ShowAllCourses`)
       .then((res) => {
         setSinglecourse(res.data.courseList?.map((course) => course._id));
-        // console.log(courseList.map((course) => course.Course));
-        setCourses(res.data.courseList?.map((course) => course.Course));
+        setCourses(res.data.courseList?.map((course) => course));
+        console.log(courses, 'class');
+
         setLoading(false);
 
         //   console.log(res.data.courseList.map((course) => course.Course));
@@ -70,9 +71,11 @@ const AllCourses = () => {
             {courses?.length >= 0 ? (
               courses?.map((course, key) => (
                 <tr key={course._id}>
-                  <td className='py-4 px-6'>{course._id.courseCode}</td>
-                  <td className='py-4 px-6'>{course._id.courseName}</td>
-                  <td className='py-4 px-6'>{course._id.courseShortName}</td>
+                  <td className='py-4 px-6'>{course.Course._id.courseCode}</td>
+                  <td className='py-4 px-6'>{course.Course._id.courseName}</td>
+                  <td className='py-4 px-6'>
+                    {course.Course._id.courseShortName}
+                  </td>
                   {/* <td className="py-4 px-6">{course._id}</td> */}
 
                   <td className='flex py-4 px-6'>
@@ -80,7 +83,7 @@ const AllCourses = () => {
                       type='submit'
                       class='inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
                       onClick={() => {
-                        navigate(`/onecourse/${singlecourse}`);
+                        navigate(`/onecourse/${course._id}`);
                         //   setSinglecourse(course._id._id);
                       }}
                     >

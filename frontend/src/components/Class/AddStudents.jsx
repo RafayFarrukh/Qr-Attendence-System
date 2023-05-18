@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axiosInstance from '../../services/axiosInstance';
 import baseURL from '../../services/BaseURL';
 import { useLocation } from 'react-router-dom';
+import * as Loader from 'react-loader-spinner';
 
 import { toast } from 'react-toastify';
 
@@ -11,21 +12,36 @@ function AddStudentsToClass() {
   const classId = location.pathname.split('/')[2];
   const [username, setUsername] = useState('');
   const [message, setMessage] = useState('');
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [loading1, setLoading1] = useState(false);
 
   const handleAddStudents = async (event) => {
     event.preventDefault();
     console.log(classId);
     try {
-      const response = await axiosInstance.post(
-        `${baseURL}/api/class/teacher/addStudents/${classId}`,
-        { username },
-      );
-      setUsername('');
+      setLoading(true);
+      await axiosInstance
+        .post(`${baseURL}/api/class/teacher/addStudents/${classId}`, {
+          username,
+        })
+        .then((er) => {
+          console.log('success fronnted', er);
+          setUsername('');
+          toast.success('Successfully Added Student', {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: 1000,
+          });
+          setLoading(false);
+        })
+        .catch((e) => {
+          setLoading(false);
+          toast.error(e.response.data.message, {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: 1000,
+          });
+        });
       // setMessage(response.data.message);
-      toast.success('Successfully Created Class', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 1000,
-      });
     } catch (error) {
       toast.error(error.message, {
         position: toast.POSITION.TOP_RIGHT,
@@ -35,6 +51,24 @@ function AddStudentsToClass() {
     }
   };
 
+  const fetchStudents = async () => {
+    try {
+      setLoading1(true);
+
+      const response = await axiosInstance.get(
+        `${baseURL}/api/class/teacher/class/${classId}/students`,
+      );
+      console.log(students, 'students');
+      setStudents(response.data.foundStudents);
+      setLoading1(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchStudents();
+  }, []); // Fetch students on component mount
   return (
     <div className='flex justify-center mt-10'>
       <form
@@ -66,9 +100,66 @@ function AddStudentsToClass() {
           type='submit'
           className='bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-700 w-full'
         >
-          Add Students
+          {loading ? (
+            <div className='flex items-center justify-center'>
+              <Loader.TailSpin
+                type='ThreeDots'
+                color='#fff'
+                height={25}
+                width={30}
+              />
+            </div>
+          ) : (
+            'Add Students'
+          )}
         </button>
       </form>
+      <div className='mt-10 ml-5'>
+        <h2 className='text-2xl font-bold mb-4'>Students Enrolled in Class</h2>
+        <table className='border border-gray-400 w-full'>
+          <thead>
+            <tr className='bg-gray-200'>
+              <th className='border border-gray-400 p-2'>Student Id</th>
+              <th className='border border-gray-400 p-2'>Full Name</th>
+              <th className='border border-gray-400 p-2'>Email</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading1 ? (
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: '400px',
+                  left: '300px',
+                }}
+              >
+                <Loader.TailSpin
+                  type='ThreeDots'
+                  color='black'
+                  height={150}
+                  width={150}
+                />
+              </div>
+            ) : (
+              students?.map?.((student) => (
+                <tr key={student._id} className='bg-white'>
+                  <td className='border border-gray-400 p-2'>
+                    {student.stdId}
+                  </td>
+                  <td className='border border-gray-400 p-2'>
+                    {student.fullName}
+                  </td>
+                  <td className='border border-gray-400 p-2'>
+                    {student.email}
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
