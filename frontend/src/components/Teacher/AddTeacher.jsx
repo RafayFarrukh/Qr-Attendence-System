@@ -64,6 +64,17 @@ const AddTeacher = () => {
       >
         Upload
       </button>
+
+      <div className='flex justify-center mt-10'>
+        <form
+          // onSubmit={handleAddStudents}
+          className='bg-white p-8 rounded-lg shadow-lg w-96'
+        >
+          {/* Add students to class form */}
+          <h2 className='text-2xl font-bold mb-8'>Add students to class</h2>
+          {/* Rest of the form code... */}
+        </form>
+      </div>
     </div>
   );
 };

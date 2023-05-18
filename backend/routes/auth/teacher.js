@@ -109,7 +109,7 @@ router.post('/login', async function (req, res, next) {
     email: req.body.email,
   });
   if (!teacher) {
-    res.status(404).send({ error: 'Teacher Dont Exists', success: false });
+    res.status(404).send({ error: 'User Dont Exists', success: false });
   } else {
     const validPassword = await bcrypt.compare(
       req.body.password,

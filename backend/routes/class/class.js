@@ -115,7 +115,20 @@ router.post('/addStudents/:id', async function (req, res, next) {
           message: 'No Student Found',
         });
       }
-      console.log(students.length, '-----------> student');
+      console.log(students, '-----------> student');
+      const newStudentsArray = studentsArray.map((studentId) =>
+        studentId.id.toString(),
+      );
+      console.log(newStudentsArray, 'newStudentsArray');
+      const addedStudents = students.filter(
+        (student) => !newStudentsArray.includes(student._id.toString()),
+      );
+      console.log(addedStudents, 'addedStudents');
+      if (addedStudents.length === 0) {
+        return res.status(400).json({
+          message: 'Students are already added',
+        });
+      }
       for (let i = 0; i < students.length; i++) {
         let studentExists = false;
         for (let j = 0; j < studentsArray.length; j++) {
@@ -129,11 +142,7 @@ router.post('/addStudents/:id', async function (req, res, next) {
           students[i].save();
         }
       }
-      if (classInfo.students.length === studentsArray.length) {
-        return res.status(400).json({
-          message: 'Students are already added',
-        });
-      }
+
       // console.log(classInfo);
       await classInfo.save();
       res.status(200).json({
