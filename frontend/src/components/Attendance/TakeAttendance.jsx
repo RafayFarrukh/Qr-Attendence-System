@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect, useContext } from 'react';
 import { UserContext } from '../../App';
 import * as Loader from 'react-loader-spinner';
 import { AiOutlineQrcode } from 'react-icons/ai';
-
+import { saveAs } from 'file-saver';
+import * as xlsx from 'xlsx';
 import axios from 'axios';
 import axiosInstance from '../../services/axiosInstance';
 import QRCode from 'react-qr-code';
@@ -130,6 +131,43 @@ const TakeAttendance = (
       }),
     );
   };
+  const handleDownloadAttendance = () => {
+    const excelData = attendance.map((student) => ({
+      'Roll Number': student.stdId,
+      'Student Name': student.fullName,
+      Status: isChecked.find((s) => s.stdId === student.stdId)?.isChecked
+        ? 'Present'
+        : 'Absent',
+    }));
+
+    // Create a new workbook
+    const workbook = xlsx.utils.book_new();
+
+    // Convert the data to a worksheet
+    const worksheet = xlsx.utils.json_to_sheet(excelData);
+
+    // Add the worksheet to the workbook
+    xlsx.utils.book_append_sheet(workbook, worksheet, 'Attendance');
+
+    // Convert the workbook to a binary Excel file
+    const excelFile = xlsx.write(workbook, {
+      type: 'binary',
+      bookType: 'xlsx',
+    });
+
+    // Create a buffer from the Excel file
+    const buffer = new ArrayBuffer(excelFile.length);
+    const view = new Uint8Array(buffer);
+    for (let i = 0; i < excelFile.length; i++) {
+      view[i] = excelFile.charCodeAt(i) & 0xff;
+    }
+
+    // Save the Excel file
+    const blob = new Blob([buffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+    saveAs(blob, 'attendance.xlsx');
+  };
   useEffect(() => {
     console.log(attendance, 'attendance----------');
   }, []);
@@ -254,10 +292,11 @@ const TakeAttendance = (
               <h3 className='text-green-600 text-md font-semibold'>
                 Present Students:{' '}
                 <span className='text-green-900'>
-                  {
+                  {/* {
                     attendance.filter((student) => student.status === 'present')
                       .length
-                  }
+                  } */}
+                  {isChecked.filter((student) => student.isChecked).length}
                 </span>
               </h3>
             </div>
@@ -341,6 +380,12 @@ const TakeAttendance = (
               )}
             </tbody>
           </table>
+          <button
+            onClick={handleDownloadAttendance}
+            className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-10'
+          >
+            Download Attendance
+          </button>
         </div>
       </div>
     </>
