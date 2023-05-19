@@ -63,150 +63,194 @@ router.post('/register/excel', upload.single('file'), (req, res) => {
 });
 
 router.post('/register', async function (req, res, next) {
-  const { fullName, email, password, stdId, imageUrl, studentImage } = req.body;
+  const { fullName, email, password, stdId } = req.body;
   if (!email || !password || !fullName) {
-    return res
-      .status(422)
-      .json({ error: 'Please fill in all the required fields' });
+    return res.status(422).json({ error: 'please add all the fields' });
   }
 
-  // Generate OTP
-  const otp = Math.floor(1000 + Math.random() * 9000);
+  Student.findOne({ $or: [{ email: email }, { stdId: stdId }] })
+    .then((existingStudent) => {
+      if (existingStudent) {
+        let errorMessage = '';
+        if (existingStudent.email === email) {
+          errorMessage = 'Email already exists';
+        } else if (existingStudent.stdId === stdId) {
+          errorMessage = 'Student ID already exists';
+        }
+        return res.status(422).json({
+          error: errorMessage,
+          success: false,
+        });
+      }
 
-  // Create email transporter
-  const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
-    requireTLS: true,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
-
-  // Set email options
-  const mailOptions = {
-    from: `"QR Attendance App" <${process.env.EMAIL_USER}>`,
-    to: email,
-    subject: 'Verify your email address',
-    html: `
-    <div style="background-color: #fafafa; padding: 20px; border-radius: 10px;">
-  <div style="text-align: center;">
-    <h1 style="color: #235789;">Welcome to QR Attendance App</h1>
-  </div>
-  <hr style="border: none; border-top: 1px solid #ddd;">
-  <p style="font-size: 16px; color: #333; line-height: 1.5;">
-    Hello ${fullName},<br><br>
-    Thank you for signing up for QR Attendance App. To start using the app, please verify your email address by entering the OTP below:<br><br>
-    Your verification OTP is: <strong style="color: #235789;">${otp}</strong><br><br>
-    This OTP is valid for 5 minutes.<br><br>
-    If you did not sign up for QR Attendance App, please ignore this email.<br><br>
-    Thanks,<br>
-    QR Attendance App team
-  </p>
-  <hr style="border: none; border-top: 1px solid #ddd;">
-  <p style="font-size: 12px; color: #777; text-align: center;">
-    This email was sent by QR Attendance App. If you did not sign up for this service, please ignore this email.
-  </p>
-</div>
-
-  `,
-  };
-
-  // Send email with OTP
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.log(error);
-      return res.status(500).json({ error: 'Failed to send email OTP' });
-    }
-    console.log('Email sent: ' + info.response);
-
-    // Store OTP in database with expiration time
-    const otpExpiration = new Date().getTime() + 600000; // OTP expires in 10 minutes
-    const otpData = {
-      email: email,
-      otp: otp,
-      expiration: otpExpiration,
-    };
-    Student.updateOne({ email: email }, { $set: { otpData: otpData } })
-      .then((result) => {
-        console.log(result);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-
-    // Hash password and save user to database
-    bcrypt.hash(password, 12).then((hashedpassword) => {
-      const user = new Student({
+      const student = new Student({
+        stdId,
         fullName,
         email,
-        password: hashedpassword,
-        stdId,
-        imageUrl,
-        studentImage,
-        verified: false,
-        otp,
+        password: password,
       });
 
-      user
+      student
         .save()
-        .then((user) => {
-          res.json({ user });
+        .then((student) => {
+          res.json({ student });
         })
         .catch((err) => {
           console.log(err);
-        });
-    });
-
-    res.status(200).json({ message: 'OTP sent successfully' });
-  });
-});
-
-router.post('/verify-otp', async function (req, res, next) {
-  const { email, otp } = req.body;
-  if (!email || !otp) {
-    return res
-      .status(422)
-      .json({ error: 'Please fill in all the required fields' });
-  }
-
-  // Check if OTP exists in database and is not expired
-  Student.findOne({ email: email })
-    .then((user) => {
-      console.log(user);
-      if (!user) {
-        return res.status(422).json({ error: 'Invalid email address' });
-      }
-      if (!user.otp) {
-        return res
-          .status(422)
-          .json({ error: 'OTP not generated for this email address' });
-      }
-      if (user.otp !== otp) {
-        return res.status(422).json({ error: 'Invalid OTP' });
-      }
-      // if (user.otpData.expiration < new Date().getTime()) {
-      //   return res.status(422).json({ error: 'OTP has expired' });
-      // }
-      console.log(user, 'user in verify email');
-      // Remove OTP data
-      user.otp = undefined;
-      user.verified = true;
-      user
-        .save()
-        .then(res.status(200).json({ message: 'User verified successfully' }))
-        .catch((err) => {
-          console.log(err);
-          res.status(500).json({ error: 'Internal server error' });
+          res.status(500).json({ error: 'An error occurred' });
         });
     })
     .catch((err) => {
       console.log(err);
-      res.status(500).json({ error: 'Internal server error' });
+      res.status(500).json({ error: 'An error occurred' });
     });
 });
+
+// router.post('/register/otp', async function (req, res, next) {
+//   const { fullName, email, password, stdId, imageUrl, studentImage } = req.body;
+//   if (!email || !password || !fullName) {
+//     return res
+//       .status(422)
+//       .json({ error: 'Please fill in all the required fields' });
+//   }
+
+//   // Generate OTP
+//   const otp = Math.floor(1000 + Math.random() * 9000);
+
+//   // Create email transporter
+//   const transporter = nodemailer.createTransport({
+//     host: 'smtp.gmail.com',
+//     port: 587,
+//     secure: false,
+//     requireTLS: true,
+//     auth: {
+//       user: process.env.EMAIL_USER,
+//       pass: process.env.EMAIL_PASS,
+//     },
+//   });
+
+//   // Set email options
+//   const mailOptions = {
+//     from: `"QR Attendance App" <${process.env.EMAIL_USER}>`,
+//     to: email,
+//     subject: 'Verify your email address',
+//     html: `
+//     <div style="background-color: #fafafa; padding: 20px; border-radius: 10px;">
+//   <div style="text-align: center;">
+//     <h1 style="color: #235789;">Welcome to QR Attendance App</h1>
+//   </div>
+//   <hr style="border: none; border-top: 1px solid #ddd;">
+//   <p style="font-size: 16px; color: #333; line-height: 1.5;">
+//     Hello ${fullName},<br><br>
+//     Thank you for signing up for QR Attendance App. To start using the app, please verify your email address by entering the OTP below:<br><br>
+//     Your verification OTP is: <strong style="color: #235789;">${otp}</strong><br><br>
+//     This OTP is valid for 5 minutes.<br><br>
+//     If you did not sign up for QR Attendance App, please ignore this email.<br><br>
+//     Thanks,<br>
+//     QR Attendance App team
+//   </p>
+//   <hr style="border: none; border-top: 1px solid #ddd;">
+//   <p style="font-size: 12px; color: #777; text-align: center;">
+//     This email was sent by QR Attendance App. If you did not sign up for this service, please ignore this email.
+//   </p>
+// </div>
+
+//   `,
+//   };
+
+//   // Send email with OTP
+//   transporter.sendMail(mailOptions, (error, info) => {
+//     if (error) {
+//       console.log(error);
+//       return res.status(500).json({ error: 'Failed to send email OTP' });
+//     }
+//     console.log('Email sent: ' + info.response);
+
+//     // Store OTP in database with expiration time
+//     const otpExpiration = new Date().getTime() + 600000; // OTP expires in 10 minutes
+//     const otpData = {
+//       email: email,
+//       otp: otp,
+//       expiration: otpExpiration,
+//     };
+//     Student.updateOne({ email: email }, { $set: { otpData: otpData } })
+//       .then((result) => {
+//         console.log(result);
+//       })
+//       .catch((err) => {
+//         console.log(err);
+//       });
+
+//     // Hash password and save user to database
+//     bcrypt.hash(password, 12).then((hashedpassword) => {
+//       const user = new Student({
+//         fullName,
+//         email,
+//         password: hashedpassword,
+//         stdId,
+//         imageUrl,
+//         studentImage,
+//         verified: false,
+//         otp,
+//       });
+
+//       user
+//         .save()
+//         .then((user) => {
+//           res.json({ user });
+//         })
+//         .catch((err) => {
+//           console.log(err);
+//         });
+//     });
+
+//     res.status(200).json({ message: 'OTP sent successfully' });
+//   });
+// });
+
+// router.post('/verify-otp', async function (req, res, next) {
+//   const { email, otp } = req.body;
+//   if (!email || !otp) {
+//     return res
+//       .status(422)
+//       .json({ error: 'Please fill in all the required fields' });
+//   }
+
+//   // Check if OTP exists in database and is not expired
+//   Student.findOne({ email: email })
+//     .then((user) => {
+//       console.log(user);
+//       if (!user) {
+//         return res.status(422).json({ error: 'Invalid email address' });
+//       }
+//       if (!user.otp) {
+//         return res
+//           .status(422)
+//           .json({ error: 'OTP not generated for this email address' });
+//       }
+//       if (user.otp !== otp) {
+//         return res.status(422).json({ error: 'Invalid OTP' });
+//       }
+//       // if (user.otpData.expiration < new Date().getTime()) {
+//       //   return res.status(422).json({ error: 'OTP has expired' });
+//       // }
+//       console.log(user, 'user in verify email');
+//       // Remove OTP data
+//       user.otp = undefined;
+//       user.verified = true;
+//       user
+//         .save()
+//         .then(res.status(200).json({ message: 'User verified successfully' }))
+//         .catch((err) => {
+//           console.log(err);
+//           res.status(500).json({ error: 'Internal server error' });
+//         });
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//       res.status(500).json({ error: 'Internal server error' });
+//     });
+// });
 
 router.post('/login', async function (req, res, next) {
   console.log('login eing hit');
