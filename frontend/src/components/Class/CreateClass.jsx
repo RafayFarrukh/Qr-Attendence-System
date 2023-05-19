@@ -3,7 +3,10 @@ import axiosInstance from '../../services/axiosInstance';
 import baseURL from '../../services/BaseURL';
 import { toast } from 'react-toastify';
 import * as Loader from 'react-loader-spinner';
-
+import { RiUserFill, RiMailFill } from 'react-icons/ri';
+import { MdCheckBox } from 'react-icons/md';
+import { AiTwotoneCalendar } from 'react-icons/ai';
+import { FaUsers } from 'react-icons/fa';
 function CreateClass() {
   const [courseCode, setCourseCode] = useState('');
   const [teacherEmail, setTeacherEmail] = useState('');
@@ -145,13 +148,17 @@ function CreateClass() {
         onSubmit={handleSubmit}
         className='bg-white p-8 rounded-lg shadow-lg'
       >
-        <h2 className='text-2xl font-bold mb-4'>Create a new class</h2>
+        <h2 className='text-2xl font-bold mb-4'>
+          <FaUsers className='inline-block mr-8 text-blue-600' /> Create a new
+          class
+        </h2>
         {message && <div className='text-red-500 mb-4'>{message}</div>}
         <div className='mb-4'>
           <label
             htmlFor='courseCode'
             className='block text-gray-700 font-bold mb-2'
           >
+            <RiUserFill className='inline-block mr-2 text-blue-600' />
             Course Code:
           </label>
           <input
@@ -169,6 +176,7 @@ function CreateClass() {
             htmlFor='teacherEmail'
             className='block text-gray-700 font-bold mb-2'
           >
+            <RiMailFill className='inline-block mr-2 text-blue-600' />
             Teacher Email:
           </label>
           <select
@@ -193,6 +201,7 @@ function CreateClass() {
             htmlFor='course'
             className='block text-gray-700 font-bold mb-2'
           >
+            <RiUserFill className='inline-block mr-2 text-blue-600' />
             Course:
           </label>
           <select
@@ -213,6 +222,7 @@ function CreateClass() {
         </div>
         <div className='mb-4'>
           <label htmlFor='batch' className='block text-gray-700 font-bold mb-2'>
+            <AiTwotoneCalendar className='inline-block mr-2 text-blue-600' />{' '}
             Batch:
           </label>
           <select

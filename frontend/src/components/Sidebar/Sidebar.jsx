@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { NavLink, useLocation, Link } from 'react-router-dom';
-import { TiHome } from 'react-icons/ti';
-import { AiFillPlayCircle } from 'react-icons/ai';
-import { HiUsers } from 'react-icons/hi';
+import { FaUsers } from 'react-icons/fa';
+import { SiDiscourse } from 'react-icons/si';
+import { ImUserTie } from 'react-icons/im';
+import { HiOutlineUsers } from 'react-icons/hi';
 import SidebarLinkGroup from './SidebarLinkGroup';
 import { UserContext } from '../../App';
 
@@ -95,7 +96,6 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
               </span>
             </h3>
             <ul className='mt-3'>
-              {/* Dashboard */}
               {isAdmin && (
                 <div>
                   <SidebarLinkGroup
@@ -122,7 +122,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                           >
                             <div className='flex items-center justify-between'>
                               <div className='flex items-center'>
-                                <TiHome />
+                                <FaUsers />
                                 <span className='text-sm font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200'>
                                   Class
                                 </span>
@@ -160,7 +160,10 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                                 <NavLink
                                   end
                                   to='/allClasses'
-                                  className='block text-slate-400 hover:text-slate-200 transition duration-150 truncate'
+                                  className={({ isActive }) =>
+                                    'block text-slate-400 hover:text-slate-200 transition duration-150 truncate ' +
+                                    (isActive ? '!text-indigo-500' : '')
+                                  }
                                 >
                                   <span className='text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200'>
                                     All Classes
@@ -197,7 +200,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                           >
                             <div className='flex items-center justify-between'>
                               <div className='flex items-center'>
-                                <TiHome />
+                                <ImUserTie />
                                 <span className='text-sm font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200'>
                                   Teachers
                                 </span>
@@ -235,7 +238,10 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                                 <NavLink
                                   end
                                   to='/allTeachers'
-                                  className='block text-slate-400 hover:text-slate-200 transition duration-150 truncate'
+                                  className={({ isActive }) =>
+                                    'block text-slate-400 hover:text-slate-200 transition duration-150 truncate ' +
+                                    (isActive ? '!text-indigo-500' : '')
+                                  }
                                 >
                                   <span className='text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200'>
                                     All Teachers
@@ -272,7 +278,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                           >
                             <div className='flex items-center justify-between'>
                               <div className='flex items-center'>
-                                <TiHome />
+                                <HiOutlineUsers />
                                 <span className='text-sm font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200'>
                                   Students
                                 </span>
@@ -310,10 +316,13 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                                 <NavLink
                                   end
                                   to='/allStudentsAdmin'
-                                  className='block text-slate-400 hover:text-slate-200 transition duration-150 truncate'
+                                  className={({ isActive }) =>
+                                    'block text-slate-400 hover:text-slate-200 transition duration-150 truncate ' +
+                                    (isActive ? '!text-indigo-500' : '')
+                                  }
                                 >
                                   <span className='text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200'>
-                                    All Studentss
+                                    All Students
                                   </span>
                                 </NavLink>
                               </li>
@@ -326,7 +335,11 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                 </div>
               )}
               {/* E-Commerce */}
-              <SidebarLinkGroup activecondition={pathname.includes('content')}>
+              <SidebarLinkGroup
+                activecondition={
+                  pathname === '/' || pathname.includes('Course')
+                }
+              >
                 {(handleClick, open) => {
                   return (
                     <React.Fragment>
@@ -344,7 +357,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                       >
                         <div className='flex items-center justify-between'>
                           <div className='flex items-center'>
-                            <AiFillPlayCircle />
+                            <SiDiscourse />
                             <span className='text-sm font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200'>
                               Courses
                             </span>
@@ -370,7 +383,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                                 <Link
                                   end
                                   to='/createCourse'
-                                  className='block text-slate-400 hover:text-slate-200 transition duration-150 truncate'
+                                  className='block text-slate-400 hover:text-slate-200 transition duration-150 truncate '
                                 >
                                   <span className='text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200'>
                                     Create Course
@@ -381,7 +394,9 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                                 <Link
                                   end
                                   to='/adminAllCourses'
-                                  className='block text-slate-400 hover:text-slate-200 transition duration-150 truncate'
+                                  className='block text-slate-400 hover:text-slate-200 transition duration-150 truncate '
+
+                                  // className='block text-slate-400 hover:text-slate-200 transition duration-150 truncate '
                                 >
                                   <span className='text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200'>
                                     All Courses

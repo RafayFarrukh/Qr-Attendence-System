@@ -3,6 +3,7 @@ import axios from 'axios';
 import baseURL from '../../services/BaseURL';
 import axiosInstance from '../../services/axiosInstance';
 import * as Loader from 'react-loader-spinner';
+import { SiDiscourse } from 'react-icons/si';
 
 const AdminAllCourses = () => {
   const [teachers, setTeachers] = useState([]);
@@ -29,7 +30,10 @@ const AdminAllCourses = () => {
 
   return (
     <div className='container mx-auto mt-10'>
-      <h1 className='text-2xl font-bold mb-4'>Courses</h1>
+      <h1 className='text-2xl font-bold mb-4 ml-5'>
+        <SiDiscourse className='inline-block mr-3 ' />
+        Courses
+      </h1>
       {loading ? (
         <div
           style={{

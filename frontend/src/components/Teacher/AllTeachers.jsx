@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import baseURL from '../../services/BaseURL';
 import * as Loader from 'react-loader-spinner';
-
+import { ImUserTie } from 'react-icons/im';
 const AllTeachers = () => {
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -25,7 +25,10 @@ const AllTeachers = () => {
 
   return (
     <div className='container mx-auto mt-10'>
-      <h1 className='text-2xl font-bold mb-4'>Teachers</h1>
+      <h1 className='text-2xl font-bold mb-4 ml-12'>
+        <ImUserTie className='inline-block mr-4' />
+        Teachers
+      </h1>
       {loading ? (
         <div
           style={{

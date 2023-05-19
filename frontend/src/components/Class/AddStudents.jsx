@@ -84,11 +84,11 @@ function AddStudentsToClass() {
             htmlFor='username'
             className='block text-gray-700 font-bold mb-5'
           >
-            Student Id
+            Student Email
           </label>
           <input
-            type='text'
-            name='username'
+            type='email'
+            name='email'
             id='username'
             value={username}
             onChange={(event) => setUsername(event.target.value)}

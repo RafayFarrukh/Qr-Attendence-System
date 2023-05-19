@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import baseURL from '../../services/BaseURL';
 import * as Loader from 'react-loader-spinner';
+import { HiOutlineUsers } from 'react-icons/hi';
 const AllStudentsAdmin = () => {
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -26,7 +27,10 @@ const AllStudentsAdmin = () => {
 
   return (
     <div className='container mx-auto mt-10'>
-      <h1 className='text-2xl font-bold mb-4'>Students</h1>
+      <h1 className='text-2xl font-bold mb-4 ml-5'>
+        <HiOutlineUsers className='inline-block mr-3 ' />
+        Students
+      </h1>
       {loading ? (
         <div
           style={{

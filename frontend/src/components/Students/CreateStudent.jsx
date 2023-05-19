@@ -3,15 +3,20 @@ import axios from 'axios';
 import axiosInstance from '../../services/axiosInstance';
 import baseURL from '../../services/BaseURL';
 import { toast } from 'react-toastify';
+import * as Loader from 'react-loader-spinner';
 
 const CreateStudents = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = useRef(null);
+  const [loading, setLoading] = useState(false);
+  const [loading1, setLoading1] = useState(false);
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
   };
 
   const handleUpload = () => {
+    setLoading(true);
+
     const formData = new FormData();
     formData.append('file', selectedFile);
     console.log(selectedFile, 'selectedFile'); // Check the value of selectedFile
@@ -31,9 +36,13 @@ const CreateStudents = () => {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 2000,
         });
+        setLoading(false);
+
         // Handle success response
       })
       .catch((error) => {
+        setLoading(false);
+
         toast.error(error.response.data.message, {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 2000,
@@ -42,6 +51,8 @@ const CreateStudents = () => {
         // Handle error response
       })
       .finally(() => {
+        setLoading(false);
+
         setSelectedFile(null); // Clear the selected file
         if (fileInputRef.current) {
           fileInputRef.current.value = ''; // Reset the file input value
@@ -51,19 +62,31 @@ const CreateStudents = () => {
 
   return (
     <div className='flex flex-col items-center justify-center mt-10'>
-      <input
-        type='file'
-        className='mb-4'
-        onChange={handleFileChange}
-        ref={fileInputRef}
-      />
-      <button
-        className='px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600'
-        onClick={handleUpload}
-        // disabled={!selectedFile}
-      >
-        Upload
-      </button>
+      <h1 className='text-2xl font-bold mb-20'>Add Students</h1>
+      <div className='flex mb-4'>
+        <input
+          type='file'
+          className='border border-gray-400 p-2 rounded-l-lg'
+          onChange={handleFileChange}
+          ref={fileInputRef}
+        />
+        <button
+          className='px-4 py-2 bg-blue-500 text-white rounded-r-lg hover:bg-blue-600'
+          onClick={handleUpload}
+          // disabled={!selectedFile}
+        >
+          {loading ? (
+            <Loader.TailSpin
+              type='ThreeDots'
+              color='#fff'
+              height={25}
+              width={30}
+            />
+          ) : (
+            'Upload'
+          )}
+        </button>
+      </div>
     </div>
   );
 };

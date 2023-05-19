@@ -51,29 +51,21 @@ const AddTeacher = () => {
 
   return (
     <div className='flex flex-col items-center justify-center mt-10'>
-      <input
-        type='file'
-        className='mb-4'
-        onChange={handleFileChange}
-        ref={fileInputRef}
-      />
-      <button
-        className='px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600'
-        onClick={handleUpload}
-        // disabled={!selectedFile}
-      >
-        Upload
-      </button>
-
-      <div className='flex justify-center mt-10'>
-        <form
-          // onSubmit={handleAddStudents}
-          className='bg-white p-8 rounded-lg shadow-lg w-96'
+      <h1 className='text-2xl font-bold mb-20'>Add Teachers</h1>
+      <div className='flex mb-4'>
+        <input
+          type='file'
+          className='border border-gray-400 p-2 rounded-l-lg'
+          onChange={handleFileChange}
+          ref={fileInputRef}
+        />
+        <button
+          className='px-4 py-2 bg-blue-500 text-white rounded-r-lg hover:bg-blue-600'
+          onClick={handleUpload}
+          // disabled={!selectedFile}
         >
-          {/* Add students to class form */}
-          <h2 className='text-2xl font-bold mb-8'>Add students to class</h2>
-          {/* Rest of the form code... */}
-        </form>
+          Upload
+        </button>
       </div>
     </div>
   );

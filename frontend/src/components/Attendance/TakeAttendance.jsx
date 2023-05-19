@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { UserContext } from '../../App';
 import * as Loader from 'react-loader-spinner';
+import { AiOutlineQrcode } from 'react-icons/ai';
 
 import axios from 'axios';
 import axiosInstance from '../../services/axiosInstance';
@@ -233,8 +234,15 @@ const TakeAttendance = (
         </div>
         <div className='flex-1 bg-white dark:text-gray-200 dark:bg-secondary-dark-bg h-auto rounded-xl p-8 pt-9 m-3'>
           <h2 className='text-lg font-bold mb-4 text-gray-800'>
-            Student Attendance
+            Scan the Quick Response Code{' '}
+            <AiOutlineQrcode
+              className='inline-block mr-8 '
+              style={{
+                height: '100px',
+              }}
+            />
           </h2>
+
           <div className='flex justify-between mb-4'>
             <div className='flex items-center whitespace-nowrap'>
               <h3 className='text-gray-600 text-md font-semibold'>
