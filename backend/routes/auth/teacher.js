@@ -83,22 +83,22 @@ router.post('/register', async function (req, res, next) {
           success: false,
         });
       }
-      bcrypt.hash(password, 12).then((hashedpassword) => {
-        const teacher = new Teacher({
-          fullName,
-          email,
-          password: hashedpassword,
-        });
-
-        teacher
-          .save()
-          .then((teacher) => {
-            res.json({ teacher });
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+      // bcrypt.hash(password, 12).then((hashedpassword) => {
+      const teacher = new Teacher({
+        fullName,
+        email,
+        password: password,
       });
+
+      teacher
+        .save()
+        .then((teacher) => {
+          res.json({ teacher });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      // });
     })
     .catch((err) => {
       console.log(err);
