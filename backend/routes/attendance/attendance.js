@@ -159,16 +159,18 @@ router.post('/attendance/:classId', async function (req, res, next) {
     if (!classInfo) {
       return res.status(404).json({ message: 'Class not found' });
     }
-
+const date1 = new Date(date);
     // Create an array of student IDs
-
+const startOfDay = new Date(date1.getFullYear(), date1.getMonth(), date1.getDate());
+const endOfDay = new Date(date1.getFullYear(), date1.getMonth(), date1.getDate() + 1);
     // Find the attendance records for the class on the given date and for the specified students
     const attendance = await Attendance.find({
-      ClassId: classInfo._id.toString(),
-      date: date,
+      // ClassId: classInfo._id.toString(),
+      ClassId: classId,
+      date:  { $gte: startOfDay, $lt: endOfDay },
       // stdId: { $in: studentIds }
     });
-    console.log(attendance, 'attendance for dates');
+    console.log(classInfo._id.toString(), 'attendance for dates');
     if (!attendance || attendance.length === 0) {
       return res
         .status(404)
