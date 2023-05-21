@@ -10,6 +10,7 @@ import * as Loader from 'react-loader-spinner';
 import * as Yup from 'yup';
 import BaseURL from '../../services/BaseURL';
 import { Formik, Field } from 'formik';
+import MaskedInput from 'react-input-mask';
 const validationSchema = Yup.object().shape({
   stdId: Yup.string()
     .required('Student ID is Required')
@@ -128,6 +129,16 @@ const CreateStudents = () => {
             password: values.password,
             stdId: values.stdId,
           });
+          const allowedDomain = '@cuilahore.edu.pk';
+            if (!values.email.endsWith(allowedDomain)) {
+              toast.error('Only emails from @cuilahore.edu.pk domain are allowed.', {
+                  position: toast.POSITION.TOP_RIGHT,
+                  autoClose: 2000,
+                });
+              setLoading1(false);
+      
+      return;
+    }
           axios
             .post(`${BaseURL}/api/auth/student/register`, {
               stdId: values.stdId,
@@ -170,11 +181,16 @@ const CreateStudents = () => {
                         <PersonIcon className='h-6 w-6 text-gray-700' />
                         <span className='ml-2 mt-10 font-bold'>Student ID</span>
                         <Field
-                          name='stdId'
-                          type='text'
-                          className='border border-gray-300 p-3 rounded-lg w-full mt-3 focus:outline-none focus:border-gray-400'
-                          placeholder='Enter Student Id Here'
-                        />
+                    name='stdId'
+                    render={({ field }) => (
+                      <MaskedInput
+                        {...field}
+                        mask='aa99-aaa-999'
+                        placeholder='Enter Student ID Here'
+                        className='border border-gray-300 p-3 rounded-lg w-full mt-3 focus:outline-none focus:border-gray-400'
+                      />
+                    )}
+                  />
                       </label>
                       {touched.stdId && errors.stdId ? (
                         <small>{errors.stdId}</small>
