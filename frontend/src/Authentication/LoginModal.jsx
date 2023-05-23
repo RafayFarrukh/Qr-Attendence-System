@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
   Button,
   Modal,
@@ -9,9 +9,20 @@ import {
   IconButton,
   styled,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import * as Loader from 'react-loader-spinner';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-
+import { Formik, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
+import BaseURL from '../services/BaseURL';
+import { UserContext } from '../App';
+const validationSchema = Yup.object().shape({
+  email: Yup.string().required('Email is required').email('Invalid email'),
+  password: Yup.string().required('Password is required'),
+});
 const ModalContainer = styled(Box)(({ theme }) => ({
   position: 'absolute',
   top: '50%',
@@ -40,28 +51,17 @@ const Form = styled('form')({
 });
 
 const TextFieldStyled = styled(TextField)(({ theme }) => ({
-  marginBottom: theme.spacing(4),
+  marginBottom: theme.spacing(2),
   '& .MuiOutlinedInput-root': {
     '& fieldset': {
-      borderColor: theme.palette.primary.main,
-      borderRadius: theme.shape.borderRadius,
-    },
-    '&:hover fieldset': {
-      borderColor: theme.palette.primary.light,
-    },
-    '&.Mui-focused fieldset': {
-      borderColor: theme.palette.primary.dark,
+      borderWidth: 2, // Adjust the border width as desired
+      borderColor: theme.palette.primary.light, // Adjust the border color as desired
     },
   },
-  '& .MuiInputBase-root': {
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: theme.palette.background.default,
-    '&:hover': {
-      backgroundColor: theme.palette.background.default,
-    },
-    '&.Mui-focused': {
-      backgroundColor: theme.palette.background.default,
-    },
+  '& .MuiOutlinedInput-notchedOutline': { display: 'none' },
+  '& .MuiOutlinedInput-input': { padding: theme.spacing(1.5) },
+  '& .Mui-focused': {
+    '& fieldset': { borderColor: theme.palette.primary.light },
   },
 }));
 
@@ -71,7 +71,7 @@ const SubmitButton = styled(Button)(({ theme }) => ({
   padding: theme.spacing(1.5),
   boxShadow: 'none',
   '&:hover': {
-    backgroundColor: theme.palette.primary.dark,
+    backgroundColor: theme.palette.primary.light,
     boxShadow: 'none',
   },
 }));
@@ -85,9 +85,12 @@ const EyeIconButton = styled(IconButton)(({ theme }) => ({
 }));
 
 const LoginModal = ({ open, onClose }) => {
+  const { state, dispatch } = useContext(UserContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -102,12 +105,41 @@ const LoginModal = ({ open, onClose }) => {
     };
   }, [open]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e, setSubmitting) => {
+    console.log({
+      username,
+      password,
+    });
     e.preventDefault();
-    // Perform login logic with username and password
-    // ...
+    setLoading(true);
+    axios
+      .post(`${BaseURL}/api/auth/teacher/login`, {
+        email: username,
+        password: password,
+      })
+      .then((resp) => {
+        localStorage.setItem('Token', resp.data.token);
+        localStorage.setItem('Teacher', JSON.stringify(resp.data.teacher));
+        setLoading(false);
+        dispatch({
+          type: 'USER',
+          payload: resp.data.teacher,
+        });
+        dispatch({
+          type: 'FETCH_TOKEN',
+          payload: resp.data.token,
+        });
+        navigate('/');
+      })
+      .catch((error) => {
+        if (error.response.data.success === false) {
+          setError(error.response.data.error);
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
-
   const handleClose = () => {
     onClose();
     // navigate('/home');
@@ -118,7 +150,6 @@ const LoginModal = ({ open, onClose }) => {
   };
 
   return (
-    // <Modal open={open} onClose={handleClose} disableScrollLock>
     <Modal
       open={open}
       onClose={handleClose}
@@ -129,35 +160,27 @@ const LoginModal = ({ open, onClose }) => {
         <Title variant='h5'>Login</Title>
         <Form onSubmit={handleSubmit}>
           <TextFieldStyled
-            label='Username'
             fullWidth
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            variant='outlined'
-            InputLabelProps={{
-              style: {
-                color: '#333333',
-              },
-            }}
-          />
+            placeholder='Enter your Email'
+            InputLabelProps={{ style: { color: '#333333' } }}
+          />{' '}
           <TextFieldStyled
-            label='Password'
-            type={showPassword ? 'text' : 'password'}
             fullWidth
+            type={showPassword ? 'text' : 'password'}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            variant='outlined'
-            InputLabelProps={{
-              style: {
-                color: '#333333',
-              },
-            }}
+            placeholder='Enter your Password'
+            InputLabelProps={{ style: { color: '#fffff' } }}
             InputProps={{
               endAdornment: (
                 <InputAdornment position='end'>
+                  {' '}
                   <EyeIconButton onClick={togglePasswordVisibility}>
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </EyeIconButton>
+                    {' '}
+                    {showPassword ? <VisibilityOff /> : <Visibility />}{' '}
+                  </EyeIconButton>{' '}
                 </InputAdornment>
               ),
             }}
@@ -168,8 +191,26 @@ const LoginModal = ({ open, onClose }) => {
             color='primary'
             fullWidth
           >
-            Submit
+            {loading ? (
+              <Loader.TailSpin
+                type='ThreeDots'
+                color='#fff'
+                height={25}
+                width={30}
+              />
+            ) : (
+              'Log in'
+            )}
           </SubmitButton>
+          {error && (
+            <Typography
+              variant='body2'
+              color='error'
+              sx={{ mt: '1rem', textAlign: 'left', fontSize: '1rem' }}
+            >
+              {error}
+            </Typography>
+          )}
           <ForgotPassword variant='body2'>Forgot Password?</ForgotPassword>
         </Form>
       </ModalContainer>
