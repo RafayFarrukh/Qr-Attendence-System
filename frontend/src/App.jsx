@@ -24,6 +24,7 @@ import AllTeachers from './components/Teacher/AllTeachers';
 import CreateStudents from './components/Students/CreateStudent';
 import AllStudentsAdmin from './components/Students/AllStudentsAdmin';
 import AdminAllCourses from './components/Courses/AdminAllCourses';
+import LoginModal from './Authentication/LoginModal';
 export const UserContext = createContext();
 function App() {
   const navigate = useNavigate();
@@ -102,6 +103,7 @@ function App() {
               <Route path='/showAttendance' element={<ShowAttendance />} />
               <Route path='/attendancePicker' element={<AttendancePicker />} />
               <Route exact path='/login' element={<Login />} />
+              <Route exact path='/loginModal' element={<LoginModal />} />
               <Route exact path='/signup' element={<Signup />} />
               <Route exact path='/' element={<Landing />} />
             </Routes>

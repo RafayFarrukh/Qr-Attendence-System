@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const Navbar = () => {
+const Navbar = ({ openModal, open }) => {
   return (
     <div>
       <nav class='bg-white border-gray-200 px-4 lg:px-6 py-2.5 dark:bg-gray-800'>
@@ -23,6 +23,16 @@ const Navbar = () => {
             >
               Log in
             </Link>
+          </div>
+          <div class='flex items-center lg:order-2'>
+            <button
+              onClick={openModal}
+              variant='outlined'
+              className='text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800'
+            >
+              {' '}
+              Log in Modal{' '}
+            </button>
           </div>
         </div>
       </nav>
