@@ -85,7 +85,7 @@ const Login = () => {
                 <div className='w-full md:w-96 md:max-w-full mx-auto shadow-lg'>
                   <div className='p-6  border-gray-300 sm:rounded-md'>
                     <h1 className='text-center font-semibold text-3xl lg:text-4xl text-gray-800 mb-12 mr-20'>
-                      Login
+                      Login Modal
                     </h1>
                     <form
                       method='POST'
