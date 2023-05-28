@@ -4,11 +4,12 @@ import baseURL from '../../services/BaseURL';
 import axiosInstance from '../../services/axiosInstance';
 import * as Loader from 'react-loader-spinner';
 import { SiDiscourse } from 'react-icons/si';
-
+import { Typography } from '@mui/material';
 const AdminAllCourses = () => {
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const [searchQuery, setSearchQuery] = useState('');
+  const [error, setError] = useState('');
   useEffect(() => {
     fetchTeachers();
   }, []);
@@ -27,13 +28,60 @@ const AdminAllCourses = () => {
       console.error(error);
     }
   };
+  const handleSearch = async () => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance
+        .get(`${baseURL}/api/course/teacher/search`, {
+          params: { course: searchQuery },
+        })
+        .then((res) => {
+          setTeachers(res.data.courses);
+          setError('');
+          console.log(res, 'res');
+        })
+        .catch((e) => {
+          console.log(e, 'ee');
+          setTeachers([]);
+          setError(e.response.data.message);
+        });
 
+      setTeachers(response.data.courses);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.error(error);
+    }
+  };
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
   return (
     <div className='container mx-auto mt-10'>
-      <h1 className='text-2xl font-bold mb-4 ml-5'>
-        <SiDiscourse className='inline-block mr-3 ' />
-        Courses
-      </h1>
+      <div className='flex items-center'>
+        <h1 className='text-2xl font-bold mb-4 ml-12'>
+          <SiDiscourse className='inline-block mr-3 ' />
+          Courses
+        </h1>
+        <div className='flex items-center ml-auto mr-8 mb-4'>
+          <input
+            type='text'
+            placeholder='Search Course...'
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleKeyPress}
+            className='px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
+          />
+          <button
+            onClick={handleSearch}
+            className='ml-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600'
+          >
+            Search
+          </button>
+        </div>
+      </div>
       {loading ? (
         <div
           style={{
@@ -81,6 +129,15 @@ const AdminAllCourses = () => {
             ))}
           </tbody>
         </table>
+      )}
+      {error && (
+        <Typography
+          variant='body2'
+          color='error'
+          sx={{ mt: '1rem', textAlign: 'left', fontSize: '1rem' }}
+        >
+          {error}
+        </Typography>
       )}
     </div>
   );

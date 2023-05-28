@@ -187,4 +187,30 @@ router.get('/courses', async function (req, res, next) {
     res.status(500).json({ message: 'Failed to fetch courses' });
   }
 });
+router.get('/search', async (req, res) => {
+  try {
+    const searchQuery = req.query.course; // Get the search query from the request query parameters
+    const regexQuery = new RegExp(`^${searchQuery}`, 'i');
+    const courses = await Course.find({
+      $or: [
+        { courseName: { $regex: regexQuery } },
+        { courseCode: { $regex: regexQuery } },
+        { courseShortName: { $regex: regexQuery } },
+      ],
+    });
+    if (courses.length === 0) {
+      return res.status(404).json({
+        message: 'No Courses found',
+        success: true,
+      });
+    }
+    return res.status(200).json({
+      courses,
+      success: true,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
 module.exports = router;

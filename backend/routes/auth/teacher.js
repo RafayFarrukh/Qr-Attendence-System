@@ -160,4 +160,39 @@ router.get('/all', async (req, res) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+// Assuming you have already imported the necessary dependencies and set up your Express.js app
+
+// Backend API route for searching teachers
+router.get('/search', async (req, res) => {
+  try {
+    const searchQuery = req.query.teacher; // Get the search query from the request query parameters
+    const regexQuery = new RegExp(`${searchQuery}`, 'i');
+    const teachers = await Teacher.find(
+      {
+        $or: [
+          { fullName: { $regex: regexQuery } }, // Case-insensitive search on the fullName field
+          { email: { $regex: regexQuery } }, // Case-insensitive search on the email field
+        ],
+      },
+      { password: 0 }, // Exclude the password field from the query results
+    );
+
+    if (teachers.length === 0) {
+      return res.status(404).json({
+        message: 'No teachers found',
+        success: true,
+      });
+    }
+
+    return res.status(200).json({
+      teachers,
+      success: true,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 module.exports = router;

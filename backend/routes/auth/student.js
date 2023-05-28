@@ -295,10 +295,39 @@ router.post('/login', async function (req, res, next) {
 
 router.get('/all', async (req, res) => {
   try {
-    const teachers = await Student.find();
+    const students = await Student.find();
 
     return res.status(200).json({
-      teachers,
+      students,
+      success: true,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+router.get('/search', async (req, res) => {
+  try {
+    const searchQuery = req.query.student; // Get the search query from the request query parameters
+    const regexQuery = new RegExp(`${searchQuery}`, 'i');
+    const students = await Student.find(
+      {
+        $or: [
+          { fullName: { $regex: regexQuery } }, // Case-insensitive search on the fullName field
+          { email: { $regex: regexQuery } }, // Case-insensitive search on the email field
+        ],
+      },
+      { password: 0 }, // Exclude the password field from the query results
+    );
+    if (students.length === 0) {
+      return res.status(404).json({
+        message: 'No Students found',
+        success: true,
+      });
+    }
+    return res.status(200).json({
+      students,
       success: true,
     });
   } catch (error) {
