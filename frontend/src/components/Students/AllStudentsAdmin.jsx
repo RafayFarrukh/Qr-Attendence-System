@@ -132,7 +132,7 @@ const AllStudentsAdmin = () => {
         <Typography
           variant='body2'
           color='error'
-          sx={{ mt: '1rem', textAlign: 'left', fontSize: '1rem' }}
+          sx={{ mt: '1rem', textAlign: 'left', fontSize: '1rem', ml: '1rem' }}
         >
           {error}
         </Typography>

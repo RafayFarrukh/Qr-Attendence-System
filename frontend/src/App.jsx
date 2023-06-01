@@ -25,6 +25,8 @@ import CreateStudents from './components/Students/CreateStudent';
 import AllStudentsAdmin from './components/Students/AllStudentsAdmin';
 import AdminAllCourses from './components/Courses/AdminAllCourses';
 import LoginModal from './Authentication/LoginModal';
+import Profile from './components/Teacher/Profile';
+import EditProfile from './components/Teacher/EditProfile';
 export const UserContext = createContext();
 function App() {
   const navigate = useNavigate();
@@ -79,6 +81,8 @@ function App() {
               <Route path='/edit-class/:id' element={<AddStudents />} />
               {/* teachher */}
               <Route path='/addTeachers' element={<AddTeacher />} />
+              <Route path='/profile' element={<Profile />} />
+              <Route path='/edit-profile' element={<EditProfile />} />
               <Route path='/allTeachers' element={<AllTeachers />} />
               <Route path='/addStudents' element={<CreateStudents />} />
               <Route path='/allStudentsAdmin' element={<AllStudentsAdmin />} />

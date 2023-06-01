@@ -227,4 +227,63 @@ router.get('/class/:classId/students', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+router.get('/search', async (req, res) => {
+  try {
+    const searchQuery = req.query.course;
+    const regexQuery = new RegExp(`^${searchQuery}`, 'i');
+
+    const classes = await Class.aggregate([
+      {
+        $lookup: {
+          from: 'courses',
+          localField: 'Course._id',
+          foreignField: '_id',
+          as: 'courseDetails',
+        },
+      },
+      {
+        $lookup: {
+          from: 'students',
+          localField: 'students._id',
+          foreignField: '_id',
+          as: 'students',
+        },
+      },
+      {
+        $match: {
+          $or: [
+            { 'courseDetails.courseName': { $regex: regexQuery } },
+            { 'students.stdId': { $regex: regexQuery } },
+            { 'teacher.email': { $regex: regexQuery } },
+          ],
+        },
+      },
+      {
+        $project: {
+          'Course._id': 1,
+          'courseDetails': { $arrayElemAt: ['$courseDetails', 0] },
+          'students._id': 1,
+          'teacher.email': 1,
+        },
+      },
+    ]);
+
+    if (classes.length === 0) {
+      return res.status(404).json({
+        message: 'No classes found',
+        success: true,
+      });
+    }
+
+    return res.status(200).json({
+      classes,
+      success: true,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 module.exports = router;

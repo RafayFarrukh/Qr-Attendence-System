@@ -4,6 +4,7 @@ import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { UserContext } from '../App';
+import { HiUserCircle, HiLogout } from 'react-icons/hi';
 const UserMenu = () => {
   const _User = localStorage.getItem('Teacher');
   const User = JSON.parse(_User);
@@ -32,21 +33,31 @@ const UserMenu = () => {
             </svg>
           </div>
         </Button>
+
         <Menu
           anchorEl={anchorEl}
           open={isOpen}
           onClose={handleClose}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+            marginRight: '1rem',
+          }}
         >
-          {/* <MenuItem id="basic-menu">
-            <li className="flex">
-              <Link className=" flex font-medium text-sm text-indigo-500 hover:text-indigo-600 flex items-center py-1 px-3">
+          <MenuItem id='basic-menu'>
+            <li className='flex items-center'>
+              <HiUserCircle className='text-indigo-500 mr-2' />
+              <Link
+                className='flex font-medium text-sm text-indigo-500 hover:text-indigo-600'
+                to='/profile'
+              >
                 Profile
               </Link>
             </li>
-          </MenuItem> */}
+          </MenuItem>
           <MenuItem id='basic-menu' onClick={handleClose}>
-            <li className='flex'>
+            <li className='flex items-center'>
+              <HiLogout className='text-indigo-500 mr-2' />
               <Link
                 to='/home'
                 onClick={() => {
@@ -55,7 +66,7 @@ const UserMenu = () => {
                   localStorage.removeItem('Token');
                   window.location.reload();
                 }}
-                className=' flex font-medium text-sm text-indigo-500 hover:text-indigo-600 flex items-center py-1 px-3'
+                className='flex font-medium text-sm text-indigo-500 hover:text-indigo-600'
               >
                 Logout
               </Link>
