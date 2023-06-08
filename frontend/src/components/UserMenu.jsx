@@ -5,6 +5,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { UserContext } from '../App';
 import { HiUserCircle, HiLogout } from 'react-icons/hi';
+
 const UserMenu = () => {
   const _User = localStorage.getItem('Teacher');
   const User = JSON.parse(_User);
@@ -13,6 +14,7 @@ const UserMenu = () => {
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
   const { dispatch } = useContext(UserContext);
+
   return (
     <div className='relative inline-flex'>
       <div>
@@ -22,6 +24,15 @@ const UserMenu = () => {
           className='inline-flex justify-center items-center group'
         >
           <div className='flex items-center truncate'>
+            {User.image ? (
+              <img
+                src={User.image}
+                alt='Profile'
+                className='w-8 h-8 rounded-full mr-2'
+              />
+            ) : (
+              <HiUserCircle className='w-8 h-8 rounded-full mr-2 text-indigo-500' />
+            )}
             <span className='truncate ml-2 text-sm font-medium group-hover:text-slate-800'>
               {User.email}
             </span>

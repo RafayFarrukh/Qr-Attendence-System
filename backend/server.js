@@ -4,6 +4,7 @@ const socketIO = require('socket.io');
 const dbConnect = require('./db/db-connect.js');
 const teacherAuth = require('./routes/auth/teacher');
 const studentAuth = require('./routes/auth/student');
+const teacher = require('./routes/teacher/teacher.js');
 const course = require('./routes/course/course');
 const StudentClass = require('./routes/class/class');
 const studentProfile = require('./routes/student/student.js');
@@ -35,6 +36,7 @@ app.use('/api/class/teacher', apiauth, StudentClass);
 app.use('/api/class/teacher/attendance', apiauth, attendance);
 app.use('/api/class/student/attendance', apiauth, studentAttendance);
 app.use('/api/class/student', apiauth, studentProfile);
+app.use('/api/teacher', apiauth, teacher);
 
 app.get('/', (req, res) => {
   res.send('welcome to backend of Qr code');

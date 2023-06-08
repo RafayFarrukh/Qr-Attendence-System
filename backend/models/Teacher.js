@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const TeacherSchema = new mongoose.Schema({
   fullName: {
     type: String,
@@ -13,10 +13,13 @@ const TeacherSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  image: {
+    type: String,
+  },
   admin: {
     type: Boolean,
     default: false,
   },
 });
 
-module.exports = mongoose.model("Teacher", TeacherSchema);
+module.exports = mongoose.model('Teacher', TeacherSchema);

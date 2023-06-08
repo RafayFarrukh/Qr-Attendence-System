@@ -128,13 +128,16 @@ router.post('/login', async function (req, res, next) {
         fullName: teacher.fullName,
 
         email: teacher.email,
+        image: teacher.image,
         admin: teacher.admin,
       },
       '12bob12ou2b1ob',
     );
-    const { _id, fullName, email, admin } = teacher;
+    const { _id, fullName, email, image, admin } = teacher;
 
-    res.status(201).json({ teacher: { _id, fullName, email, admin }, token });
+    res
+      .status(201)
+      .json({ teacher: { _id, fullName, email, image, admin }, token });
   }
 });
 
