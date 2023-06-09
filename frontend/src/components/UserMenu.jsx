@@ -56,32 +56,41 @@ const UserMenu = () => {
           }}
         >
           <MenuItem id='basic-menu'>
-            <li className='flex items-center'>
-              <HiUserCircle className='text-indigo-500 mr-2' />
-              <Link
-                className='flex font-medium text-sm text-indigo-500 hover:text-indigo-600'
-                to='/profile'
-              >
+            <Link
+              className='flex items-center hover:text-indigo-600'
+              to='/profile'
+            >
+              <HiUserCircle className=' mr-2' />
+              <div className='flex font-medium text-sm ' to='/profile'>
                 Profile
-              </Link>
-            </li>
+              </div>
+            </Link>
           </MenuItem>
           <MenuItem id='basic-menu' onClick={handleClose}>
-            <li className='flex items-center'>
-              <HiLogout className='text-indigo-500 mr-2' />
-              <Link
-                to='/home'
-                onClick={() => {
-                  dispatch({ type: 'CLEAR' });
-                  localStorage.removeItem('Teacher');
-                  localStorage.removeItem('Token');
-                  window.location.reload();
-                }}
-                className='flex font-medium text-sm text-indigo-500 hover:text-indigo-600'
+            <Link
+              className='flex items-center hover:text-indigo-600'
+              to='/home'
+              onClick={() => {
+                dispatch({ type: 'CLEAR' });
+                localStorage.removeItem('Teacher');
+                localStorage.removeItem('Token');
+                window.location.reload();
+              }}
+            >
+              <HiLogout className='mr-2' />
+              <div
+                // to='/home'
+                // onClick={() => {
+                //   dispatch({ type: 'CLEAR' });
+                //   localStorage.removeItem('Teacher');
+                //   localStorage.removeItem('Token');
+                //   window.location.reload();
+                // }}
+                className='flex font-medium text-sm '
               >
                 Logout
-              </Link>
-            </li>
+              </div>
+            </Link>
           </MenuItem>
         </Menu>
       </div>

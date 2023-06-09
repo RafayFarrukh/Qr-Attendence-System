@@ -1,42 +1,30 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-
+import logo from '../css/images/logo.png';
+import { FiUser } from 'react-icons/fi';
 const Navbar = ({ openModal, open }) => {
   return (
-    <div>
-      <nav class='bg-white border-gray-200 px-4 lg:px-6 py-2.5 dark:bg-gray-800'>
-        <div class='flex flex-wrap justify-between items-center mx-auto max-w-screen-xl'>
-          <Link to='/home' class='flex items-center'>
-            {/* <img
-              src="https://flowbite.com/docs/images/logo.svg"
-              class="mr-3 h-6 sm:h-9"
-              alt="Flowbite Logo"
-            /> */}
-            <span class='self-center text-xl font-semibold whitespace-nowrap dark:text-white'>
-              Qr Code
-            </span>
-          </Link>
-          {/* <div class='flex items-center lg:order-2'>
-            <Link
-              to='/login'
-              class='text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800'
-            >
-              Log in
+    <nav className='bg-white shadow-lg'>
+      <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+        <div className='flex justify-between h-16'>
+          <div className='flex'>
+            <Link to='/home' className='flex-shrink-0 flex items-center'>
+              <img className='h-8 w-auto' src={logo} alt='Logo' />
+              <span className='ml-2 text-xl font-bold'>QR Code</span>
             </Link>
-          </div> */}
-          <div class='flex items-center lg:order-2'>
+          </div>
+          <div className='flex items-center'>
             <button
               onClick={openModal}
-              variant='outlined'
-              className='text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800'
+              className='flex items-center text-gray-800 hover:bg-gray-100 focus:ring-4 focus:ring-gray-300 font-lg rounded-lg text-lg px-5 py-2.5 ml-4 hover:text-gray-800 focus:text-gray-800 focus:outline-none transition duration-300'
             >
-              {' '}
-              Login{' '}
+              <FiUser className='mr-2' size={20} strokeWidth={2} />
+              Login
             </button>
           </div>
         </div>
-      </nav>
-    </div>
+      </div>
+    </nav>
   );
 };
 
