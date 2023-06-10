@@ -118,22 +118,22 @@ const LoginModal = ({ open, onClose }) => {
         password: password,
       })
       .then((resp) => {
-        localStorage.setItem('Token', resp.data.token);
-        localStorage.setItem('Teacher', JSON.stringify(resp.data.teacher));
+        localStorage.setItem('Token', resp?.data?.token);
+        localStorage.setItem('Teacher', JSON.stringify(resp?.data?.teacher));
         setLoading(false);
         dispatch({
           type: 'USER',
-          payload: resp.data.teacher,
+          payload: resp?.data?.teacher,
         });
         dispatch({
           type: 'FETCH_TOKEN',
-          payload: resp.data.token,
+          payload: resp?.data?.token,
         });
         navigate('/');
       })
       .catch((error) => {
-        if (error.response.data.success === false) {
-          setError(error.response.data.error);
+        if (error?.response?.data?.success === false) {
+          setError(error?.response?.data?.error);
         }
       })
       .finally(() => {
