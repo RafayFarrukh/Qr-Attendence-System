@@ -8,29 +8,28 @@ const Profile = () => {
   const navigate = useNavigate();
   const { state } = useContext(UserContext);
   const teacher = JSON.parse(localStorage.getItem('Teacher'));
-  //   const teacher = state?.user;
 
   const handleEdit = () => {
     navigate('/edit-profile');
   };
 
   return (
-    <div className='container mx-auto mt-10'>
+    <div className='container mx-auto mt-10 py-4'>
       <div className='flex flex-col items-center'>
         <div className='bg-white rounded-lg shadow-lg p-8 mb-8'>
           {teacher?.image ? (
             <img
-              src={teacher?.image} // Assuming you have the profile image URL in the teacher object
+              src={teacher?.image}
               alt='Profile'
-              className='w-24 h-24 rounded-full mx-auto mb-4'
+              className='w-24 h-24 rounded-full mx-auto mb-4 object-cover'
             />
           ) : (
             <HiUserCircle className='w-24 h-24 rounded-full mx-auto mb-4 text-indigo-500' />
           )}
-          <h1 className='text-2xl font-bold text-gray-800 mb-2 flex items-center'>
-            <FaUser className='mr-2 text-xl' /> {teacher?.fullName}
+          <h1 className='text-2xl font-bold text-gray-800 mb-4'>
+            <FaUser className='inline-block mr-2 text-xl' /> {teacher?.fullName}
           </h1>
-          <p className='text-gray-600 text-base mb-4 flex items-center'>
+          <p className='text-gray-600 text-base mb-6 flex items-center'>
             <FaEnvelope className='mr-2 text-lg' /> {teacher?.email}
           </p>
           <button

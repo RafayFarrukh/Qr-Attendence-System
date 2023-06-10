@@ -144,11 +144,68 @@ router.get(
   },
 );
 
+router.get('/totalAttendances/:classId', async function (req, res, next) {
+  try {
+    const classId = req.params.classId;
+    const classInfo = await Class.findById(classId).exec();
+    if (!classInfo) {
+      return res.status(404).json({ message: 'Class not found' });
+    }
+    const attendance = await Attendance.find({ ClassId: classId });
+    if (!attendance || attendance.length === 0) {
+      return res
+        .status(404)
+        .json({ message: 'Attendance not found', success: false });
+    }
+
+    const studentIds = classInfo.students.map((student) => student._id);
+    const attendanceStatus = {};
+
+    for (const record of attendance) {
+      if (!attendanceStatus[record.date]) {
+        attendanceStatus[record.date] = {};
+      }
+      attendanceStatus[record.date][record.stdId] = {
+        fullName: record.fullName,
+        status: 'present',
+      };
+    }
+
+    const students = await Student.find({ _id: { $in: studentIds } });
+
+    const attendanceArray = Object.entries(attendanceStatus).map(
+      ([date, attendanceList]) => {
+        const studentsAttendance = students.map((student) => {
+          const status = attendanceList[student.stdId] ? 'present' : 'absent';
+          return {
+            stdId: student.stdId,
+            fullName: student.fullName,
+            status: status,
+          };
+        });
+        return {
+          date,
+          attendance: studentsAttendance,
+        };
+      },
+    );
+
+    return res.status(200).json({
+      message: 'Attendance found successfully',
+      attendance: attendanceArray,
+      success: true,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 router.post('/attendance/:classId', async function (req, res, next) {
   try {
     const classId = req.params.classId;
     const date = req.body.date;
-    console.log(date,classId,"date and class id")
+    console.log(date, classId, 'date and class id');
     if (!date) {
       return res.status(404).json({ message: 'Date not specified' });
     }
@@ -159,15 +216,23 @@ router.post('/attendance/:classId', async function (req, res, next) {
     if (!classInfo) {
       return res.status(404).json({ message: 'Class not found' });
     }
-const date1 = new Date(date);
+    const date1 = new Date(date);
     // Create an array of student IDs
-const startOfDay = new Date(date1.getFullYear(), date1.getMonth(), date1.getDate());
-const endOfDay = new Date(date1.getFullYear(), date1.getMonth(), date1.getDate() + 1);
+    const startOfDay = new Date(
+      date1.getFullYear(),
+      date1.getMonth(),
+      date1.getDate(),
+    );
+    const endOfDay = new Date(
+      date1.getFullYear(),
+      date1.getMonth(),
+      date1.getDate() + 1,
+    );
     // Find the attendance records for the class on the given date and for the specified students
     const attendance = await Attendance.find({
       // ClassId: classInfo._id.toString(),
       ClassId: classId,
-      date:  { $gte: startOfDay, $lt: endOfDay },
+      // date:  { $gte: startOfDay, $lt: endOfDay },
       // stdId: { $in: studentIds }
     });
     console.log(classInfo._id.toString(), 'attendance for dates');
@@ -185,9 +250,7 @@ const endOfDay = new Date(date1.getFullYear(), date1.getMonth(), date1.getDate()
       console.log(students, 'found student');
       students.push(student);
     }
-    // console.log(students,'students Array')
 
-    // Update the attendance status to "present" for students who are present
     for (const student of students) {
       attendanceStatus[student.stdId] = 'absent';
     }
@@ -235,7 +298,7 @@ router.post('/RealTimeAttendance/:classId', async function (req, res, next) {
   try {
     const classId = req.params.classId;
     const date = req.body.date;
-    console.log(date, classId,"date and class id");
+    console.log(date, classId, 'date and class id');
     if (!date) {
       return res.status(404).json({ message: 'Date not specified' });
     }

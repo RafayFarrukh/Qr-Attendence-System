@@ -28,7 +28,7 @@ const OneCourse = () => {
         setCourse(res.data.classObj);
         setLoading(false);
       });
-  }, [course]);
+  }, []);
   useEffect(() => {
     console.log(state);
   }, []);
@@ -67,7 +67,7 @@ const OneCourse = () => {
             <div
               class='px-6 py-4'
               onClick={() => {
-                navigate('/attendancePicker');
+                navigate(`/attendancePicker/${id}`);
               }}
             >
               <h3 class='text-lg font-bold text-blue-800 dark:text-white'>

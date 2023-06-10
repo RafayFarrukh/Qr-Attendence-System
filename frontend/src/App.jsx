@@ -15,6 +15,7 @@ import OneCourse from './components/Courses/OneCourse';
 import TakeAttendance from './components/Attendance/TakeAttendance';
 import ShowAttendance from './components/Attendance/ShowAttendance';
 import AttendancePicker from './components/Attendance/AttendancePicker';
+import TotalAttendance from './components/Attendance/TotalAttendance';
 import CreateClass from './components/Class/CreateClass';
 import CreateCourse from './components/Courses/CreateCourse';
 import TotalClasses from './components/Class/TotalClasses';
@@ -27,6 +28,7 @@ import AdminAllCourses from './components/Courses/AdminAllCourses';
 import LoginModal from './Authentication/LoginModal';
 import Profile from './components/Teacher/Profile';
 import EditProfile from './components/Teacher/EditProfile';
+import OneAttendance from './components/Attendance/OneAttendance';
 export const UserContext = createContext();
 function App() {
   const navigate = useNavigate();
@@ -105,7 +107,11 @@ function App() {
                 }
               />
               <Route path='/showAttendance' element={<ShowAttendance />} />
-              <Route path='/attendancePicker' element={<AttendancePicker />} />
+              <Route path='/oneAttendance' element={<OneAttendance />} />
+              <Route
+                path='/attendancePicker/:id'
+                element={<TotalAttendance />}
+              />
               <Route exact path='/login' element={<Login />} />
               <Route exact path='/loginModal' element={<LoginModal />} />
               <Route exact path='/signup' element={<Signup />} />
