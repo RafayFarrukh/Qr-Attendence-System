@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+
 const TeacherSchema = new mongoose.Schema({
   fullName: {
     type: String,
@@ -21,5 +23,7 @@ const TeacherSchema = new mongoose.Schema({
     default: false,
   },
 });
-
+TeacherSchema.methods.comparePassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
 module.exports = mongoose.model('Teacher', TeacherSchema);

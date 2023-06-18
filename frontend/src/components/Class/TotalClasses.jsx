@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../services/axiosInstance';
-
+import { useNavigate } from 'react-router-dom';
 import baseURL from '../../services/BaseURL';
 import * as Loader from 'react-loader-spinner';
 import { HiOutlineAcademicCap } from 'react-icons/hi';
@@ -11,6 +11,7 @@ const TotalClasses = () => {
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate(); // Hook for navigation
 
   useEffect(() => {
     fetchClasses();
@@ -22,15 +23,11 @@ const TotalClasses = () => {
 
       const response = await axiosInstance.get(
         `${baseURL}/api/class/teacher/totalclasses`,
-        {
-          params: { course: searchQuery },
-        },
       );
       setClasses(response.data.classes);
       setLoading(false);
     } catch (error) {
       setLoading(false);
-
       console.error(error);
     }
   };
@@ -46,10 +43,8 @@ const TotalClasses = () => {
         .then((res) => {
           setClasses(res.data.classes);
           setError('');
-          console.log(res, 'res');
         })
         .catch((e) => {
-          console.log(e, 'ee');
           setClasses([]);
           setError(e.response.data.message);
         });
@@ -66,6 +61,10 @@ const TotalClasses = () => {
     if (e.key === 'Enter') {
       handleSearch();
     }
+  };
+
+  const handleClassClick = (classId) => {
+    navigate(`/edit-class/${classId}`);
   };
 
   return (
@@ -128,7 +127,15 @@ const TotalClasses = () => {
           </thead>
           <tbody>
             {classes?.map?.((class_) => (
-              <tr key={class_._id}>
+              <tr
+                key={class_._id}
+                onClick={() => handleClassClick(class_._id)} // Handle class click
+                style={{
+                  cursor: 'pointer',
+                  transition: 'background-color 0.3s ease',
+                }}
+                className='hover:bg-gray-100'
+              >
                 <td className='px-6 py-4 border-b border-gray-300'>
                   {class_.courseDetails.courseCode}
                 </td>

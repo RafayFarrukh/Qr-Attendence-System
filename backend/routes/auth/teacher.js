@@ -111,11 +111,11 @@ router.post('/login', async function (req, res, next) {
   if (!teacher) {
     res.status(404).send({ error: 'User Dont Exists', success: false });
   } else {
-    // const validPassword = await bcrypt.compare(
-    //   req.body.password,
-    //   teacher.password,
-    // );
-    const validPassword = req.body.password == teacher.password;
+    const validPassword = await bcrypt.compare(
+      req.body.password,
+      teacher.password,
+    );
+    // const validPassword = req.body.password == teacher.password;
     if (!validPassword) {
       return res
         .status(404)
