@@ -262,12 +262,12 @@ router.post('/login', async function (req, res, next) {
       // .status(404)
       .json({ error: 'Student Dont Exists', success: false });
   } else {
-    // const validPassword = await bcrypt.compare(
-    //   req.body.password,
-    //   user.password,
-    // );
-    const validPassword = req.body.password == user.password;
-
+    const validPassword = await bcrypt.compare(
+      req.body.password,
+      user.password,
+    );
+    // const validPassword = req.body.password == user.password;
+console.log(req.body.password,req.body.email,user.password)
     if (!validPassword) {
       return (
         res

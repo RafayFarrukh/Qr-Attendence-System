@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Student = require('../../models/Student');
+const bcrypt = require('bcryptjs');
 
 router.post('/studentProfile/:studentId', async function (req, res, next) {
   try {
@@ -29,5 +30,35 @@ router.post('/studentProfile/:studentId', async function (req, res, next) {
     return res.status(500).json({ error: 'Internal server error' });
   }
 });
+router.patch('/updatePassword', async (req, res) => {
+  console.log("eing hhit backend")
+  const user = req.user;
+  const { currentPassword, newPassword } = req.body;
+console.log( currentPassword, newPassword ," currentPassword, newPassword ")
+  try {
+    // Find the teacher by ID
+    const student = await Student.findById(user._id);
+console.log(student,"studet")
+    if (!student) {
+      return res.json({ message: 'student not found',success:false });
+    }
 
+    // Check if the current password matches
+    const isPasswordCorrect = await student.comparePassword(currentPassword);
+
+    if (!isPasswordCorrect) {
+      console.log("we are here")
+      return res.json({ message: 'Incorrect Current Password',success:false });
+    }
+    const newPass = await bcrypt.hash(newPassword, 12);
+    // Update the password
+    student.password = newPass;
+    await student.save();
+
+    res.json({ message: 'Password updated successfully',success:true });
+  } catch (error) {
+    console.error(error);
+    res.json({ message: 'Internal server error',success:false });
+  }
+});
 module.exports = router;
