@@ -31,9 +31,9 @@ const AttendanceList = () => {
         const response = await axiosInstance.get(
           `${baseURL}/api/class/teacher/attendance/totalAttendances/${id}`,
         );
-        console.log(response.data.attendance);
+        console.log(response?.data?.attendance);
         setError('');
-        setAttendanceData(response.data.attendance);
+        setAttendanceData(response?.data?.attendance);
         console.log(attendanceData[0].attendance.length, 'attendancedata');
         setLoading(false);
       } catch (error) {
@@ -63,7 +63,7 @@ const AttendanceList = () => {
   const handleAttendanceClick = (attendanceItem) => {
     console.log(attendanceItem, 'attendanceItem in handleAttendanceClick');
     <OneAttendance attendanceItem={attendanceItem} />;
-    navigate(`/oneAttendance`, { state: { attendanceItem } });
+    navigate(`/oneAttendance`, { state: { attendanceItem, id } });
   };
 
   return (

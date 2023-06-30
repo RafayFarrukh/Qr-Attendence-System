@@ -54,14 +54,6 @@ router.get(
             })
         );
       }
-      // if (!classInfo.students.includes(student._id)) {
-      //   return res
-      //     .status(400)
-      //     .json({ message: "Student is not enrolled in the class" });
-      // }
-
-      // Check if attendance has already been marked for the student on the current date
-      // const today = new Date().toISOString().slice(0, 10);
 
       const today = moment().format('YYYY-MM-DD HH:');
 
@@ -93,32 +85,6 @@ router.get(
             })
         );
       }
-      // const existingAttendance = await Attendance.findOne({
-      //   classInfoId: classInfo._id,
-      //   studentId: student.stdId,
-      //   date: { $lte: today },
-      // })
-      //   .sort({ date: -1 })
-      //   .limit(1);
-
-      // if (
-      //   existingAttendance
-      //   //  &&
-      //   // existingAttendance.date.toISOString().slice(0, 10) === today
-      // ) {
-      //   console.log(
-      //     'Attendance has already been marked for this student on the current date',
-      //   );
-      //   return (
-      //     res
-      //       // .status(400)
-      //       .json({
-      //         message:
-      //           'Attendance has already been marked for this student on the current date',
-      //         success: false,
-      //       })
-      //   );
-      // }
 
       // Create new attendance record for the student in the classInfo
       const newAttendance = new Attendance({
@@ -380,6 +346,49 @@ router.post('/RealTimeAttendance/:classId', async function (req, res, next) {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// PUT /api/attendance/:attendanceId/students
+// Assuming you have a route like '/api/attendance/:stdId/:date' for updating attendance
+// Assuming you have a route like '/api/attendance/students' for updating multiple attendances
+router.patch('/edit', async (req, res) => {
+  const { students, date, ClassId } = req.body;
+
+  try {
+    const updates = students.map(async (student) => {
+      const { stdId, fullName, status } = student;
+
+      if (status === 'absent') {
+        // Delete attendance record for absent students
+        const deletedAttendance = await Attendance.findOneAndDelete({
+          stdId,
+          date,
+          ClassId,
+        });
+        console.log(deletedAttendance, 'deleted');
+        return null;
+      }
+
+      const attendance = await Attendance.findOneAndUpdate(
+        { stdId, date, ClassId },
+        { $set: { stdId, fullName, date, status } },
+        { new: true, upsert: true },
+      );
+
+      console.log(attendance, 'attendance');
+      return attendance;
+    });
+
+    const updatedAttendances = await Promise.all(updates);
+    const filteredAttendances = updatedAttendances.filter(
+      (attendance) => attendance !== null,
+    );
+    console.log(filteredAttendances, 'updated');
+    return res.json(filteredAttendances);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Server error' });
   }
 });
 
