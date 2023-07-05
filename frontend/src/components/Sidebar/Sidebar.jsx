@@ -6,6 +6,7 @@ import { ImUserTie } from 'react-icons/im';
 import { HiOutlineUsers } from 'react-icons/hi';
 import SidebarLinkGroup from './SidebarLinkGroup';
 import { UserContext } from '../../App';
+import logo from '../../css/images/logooo.jpeg';
 
 function Sidebar({ sidebarOpen, setSidebarOpen }) {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -61,6 +62,14 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
           sidebarOpen ? 'translate-x-0' : '-translate-x-64'
         }`}
       >
+        <div className='flex'>
+          {sidebarExpanded && (
+            <Link to='/' className='flex-shrink-0 flex items-center mt-3'>
+              <img className='h-8 w-auto rounded-xl' src={logo} alt='Logo' />
+              <span className='ml-2 text-xl font-bold text-white	'>QR Code</span>
+            </Link>
+          )}
+        </div>
         {/* Sidebar header */}
         <div className='flex justify-between mb-10 pr-3 sm:px-2'>
           {/* Close button */}

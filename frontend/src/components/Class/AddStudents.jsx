@@ -7,6 +7,16 @@ import * as Loader from 'react-loader-spinner';
 import { toast } from 'react-toastify';
 import { BsFillTrashFill } from 'react-icons/bs';
 
+// Import the necessary components from the material-ui library
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Typography,
+} from '@mui/material';
+
 function AddStudentsToClass(user) {
   const location = useLocation();
   const classId = location.pathname.split('/')[2];
@@ -16,6 +26,8 @@ function AddStudentsToClass(user) {
   const [loading, setLoading] = useState(false);
   const [loading1, setLoading1] = useState(false);
   const [loadingRemove, setLoadingRemove] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // State to control the delete confirmation dialog
+  const [selectedStudentId, setSelectedStudentId] = useState(''); // State to store the id of the student to be removed
 
   const handleAddStudents = async (event) => {
     event.preventDefault();
@@ -72,11 +84,31 @@ function AddStudentsToClass(user) {
   useEffect(() => {
     fetchStudents();
   }, []); // Fetch students on component mount
+
   const handleRemoveStudent = async (studentId) => {
     try {
+      setSelectedStudentId(studentId); // Store the id of the selected student
+      setIsDeleteModalOpen(true); // Open the delete confirmation dialog
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to remove student from class', {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 1000,
+      });
+    }
+  };
+
+  const handleModalClose = () => {
+    setIsDeleteModalOpen(false); // Close the delete confirmation dialog
+    setSelectedStudentId(''); // Clear the selected student id
+  };
+
+  const handleModalConfirm = async () => {
+    try {
+      setIsDeleteModalOpen(false); // Close the delete confirmation dialog
       setLoadingRemove(true);
       await axiosInstance.delete(
-        `${baseURL}/api/class/teacher/class/${classId}/student/${studentId}`,
+        `${baseURL}/api/class/teacher/class/${classId}/student/${selectedStudentId}`,
       );
       toast.success('Student removed from class', {
         position: toast.POSITION.TOP_RIGHT,
@@ -93,6 +125,7 @@ function AddStudentsToClass(user) {
       setLoadingRemove(false);
     }
   };
+
   return (
     <div className='flex justify-center mt-10'>
       <form
@@ -182,18 +215,8 @@ function AddStudentsToClass(user) {
                     <button
                       className='flex items-center justify-center text-red-500 hover:text-red-700'
                       onClick={() => handleRemoveStudent(student._id)}
-                      // disabled={loadingRemove}
                     >
-                      {/* {loadingRemove ? (
-                        <Loader.TailSpin
-                          type='ThreeDots'
-                          color='black'
-                          height={20}
-                          width={20}
-                        />
-                      ) : ( */}
                       <BsFillTrashFill />
-                      {/* )} */}
                     </button>
                   </td>
                 </tr>
@@ -202,6 +225,29 @@ function AddStudentsToClass(user) {
           </tbody>
         </table>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={isDeleteModalOpen}
+        onClose={handleModalClose}
+        aria-labelledby='delete-dialog-title'
+        aria-describedby='delete-dialog-description'
+      >
+        <DialogTitle id='delete-dialog-title'>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <Typography variant='body1' gutterBottom>
+            Are you sure you want to remove this student from the class?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleModalClose} color='primary'>
+            Cancel
+          </Button>
+          <Button onClick={handleModalConfirm} color='primary' autoFocus>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

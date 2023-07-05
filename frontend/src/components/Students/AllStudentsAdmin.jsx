@@ -4,11 +4,28 @@ import baseURL from '../../services/BaseURL';
 import * as Loader from 'react-loader-spinner';
 import { HiOutlineUsers } from 'react-icons/hi';
 import { Typography } from '@mui/material';
+import { useParams, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { AiFillEdit, AiFillDelete } from 'react-icons/ai';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+} from '@mui/material';
+import axiosInstance from '../../services/axiosInstance';
+
 const AllStudentsAdmin = () => {
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [error, setError] = useState('');
+  const [deleteStudentId, setDeleteStudentId] = useState(null);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  const navigate = useNavigate();
+
   useEffect(() => {
     fetchTeachers();
   }, []);
@@ -51,11 +68,45 @@ const AllStudentsAdmin = () => {
       console.error(error);
     }
   };
+
+  const handleModalConfirm = async () => {
+    setDeleteModalOpen(false);
+    try {
+      setLoading(true);
+      await axiosInstance.delete(
+        `${baseURL}/api/class/student/delete/${deleteStudentId}`,
+      );
+      setLoading(false);
+      toast.success('Student deleted successfully', {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 2000,
+      });
+      fetchTeachers(); // Refresh the student list
+    } catch (error) {
+      setLoading(false);
+      toast.error(error.response.data.message, {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 2000,
+      });
+    }
+  };
+
+  const handleModalClose = () => {
+    setDeleteModalOpen(false);
+    setDeleteStudentId(null);
+  };
+
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSearch();
     }
   };
+
+  const handleDeleteStudent = (studentId) => {
+    setDeleteStudentId(studentId);
+    setDeleteModalOpen(true);
+  };
+
   return (
     <div className='container mx-auto mt-10'>
       <div className='flex items-center'>
@@ -123,6 +174,28 @@ const AllStudentsAdmin = () => {
                 <td className='px-6 py-4 border-b border-gray-300'>
                   {teacher.fullName}
                 </td>
+                <td className='px-6 py-4 border-b border-gray-300'>
+                  <button
+                    className='bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600'
+                    onClick={() =>
+                      navigate(`/edit-student/${teacher._id}`, {
+                        state: {
+                          stdId: teacher.stdId,
+                          email: teacher.email,
+                          fullName: teacher.fullName,
+                        },
+                      })
+                    }
+                  >
+                    <AiFillEdit />
+                  </button>
+                  <button
+                    className='bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 ml-2'
+                    onClick={() => handleDeleteStudent(teacher._id)}
+                  >
+                    <AiFillDelete />
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -137,6 +210,20 @@ const AllStudentsAdmin = () => {
           {error}
         </Typography>
       )}
+      <Dialog open={isDeleteModalOpen} onClose={handleModalClose}>
+        <DialogTitle>Delete Student</DialogTitle>
+        <DialogContent>
+          <Typography>Areyou sure you want to delete this student?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleModalClose} color='primary'>
+            Cancel
+          </Button>
+          <Button onClick={handleModalConfirm} color='primary'>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

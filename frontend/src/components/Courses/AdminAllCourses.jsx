@@ -8,12 +8,22 @@ import { Typography } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { AiFillEdit, AiFillDelete } from 'react-icons/ai';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+} from '@mui/material';
 
 const AdminAllCourses = () => {
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [error, setError] = useState('');
+  const [deleteCourseId, setDeleteCourseId] = useState(null);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -61,11 +71,12 @@ const AdminAllCourses = () => {
     }
   };
 
-  const handleDelete = async (courseId) => {
+  const handleModalConfirm = async () => {
+    setDeleteModalOpen(false);
     try {
       setLoading(true);
       await axiosInstance.delete(
-        `${baseURL}/api/course/teacher/delete/${courseId}`,
+        `${baseURL}/api/course/teacher/delete/${deleteCourseId}`,
       );
       setLoading(false);
       toast.success('Course deleted successfully', {
@@ -82,12 +93,20 @@ const AdminAllCourses = () => {
     }
   };
 
+  const handleModalClose = () => {
+    setDeleteModalOpen(false);
+    setDeleteCourseId(null);
+  };
+
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSearch();
     }
   };
-
+  const handleDelete = (courseId) => {
+    setDeleteCourseId(courseId);
+    setDeleteModalOpen(true);
+  };
   return (
     <div className='container mx-auto mt-10'>
       <div className='flex items-center'>
@@ -194,6 +213,20 @@ const AdminAllCourses = () => {
           {error}
         </Typography>
       )}
+      <Dialog open={isDeleteModalOpen} onClose={handleModalClose}>
+        <DialogTitle>Delete Course</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to delete this course?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleModalClose} color='primary'>
+            Cancel
+          </Button>
+          <Button onClick={handleModalConfirm} color='primary'>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

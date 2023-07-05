@@ -30,6 +30,7 @@ import Profile from './components/Teacher/Profile';
 import EditProfile from './components/Teacher/EditProfile';
 import OneAttendance from './components/Attendance/OneAttendance';
 import CourseEditPage from './components/Courses/CourseEdit';
+import StudentEditPage from './components/Students/StudentEdit';
 export const UserContext = createContext();
 function App() {
   const navigate = useNavigate();
@@ -92,6 +93,10 @@ function App() {
               <Route path='/allTeachers' element={<AllTeachers />} />
               <Route path='/addStudents' element={<CreateStudents />} />
               <Route path='/allStudentsAdmin' element={<AllStudentsAdmin />} />
+              <Route
+                path='/edit-student/:studentId'
+                element={<StudentEditPage />}
+              />
 
               <Route path='/home' element={<Home />} />
               {/* course */}
