@@ -5,11 +5,17 @@ import axiosInstance from '../../services/axiosInstance';
 import * as Loader from 'react-loader-spinner';
 import { SiDiscourse } from 'react-icons/si';
 import { Typography } from '@mui/material';
+import { useParams, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { AiFillEdit, AiFillDelete } from 'react-icons/ai';
+
 const AdminAllCourses = () => {
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
+
   useEffect(() => {
     fetchTeachers();
   }, []);
@@ -28,6 +34,7 @@ const AdminAllCourses = () => {
       console.error(error);
     }
   };
+
   const handleSearch = async () => {
     try {
       setLoading(true);
@@ -53,11 +60,34 @@ const AdminAllCourses = () => {
       console.error(error);
     }
   };
+
+  const handleDelete = async (courseId) => {
+    try {
+      setLoading(true);
+      await axiosInstance.delete(
+        `${baseURL}/api/course/teacher/delete/${courseId}`,
+      );
+      setLoading(false);
+      toast.success('Course deleted successfully', {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 2000,
+      });
+      fetchTeachers(); // Refresh the course list
+    } catch (error) {
+      setLoading(false);
+      toast.error(error.response.data.message, {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 2000,
+      });
+    }
+  };
+
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSearch();
     }
   };
+
   return (
     <div className='container mx-auto mt-10'>
       <div className='flex items-center'>
@@ -111,6 +141,9 @@ const AdminAllCourses = () => {
               <th className='px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase border-b border-gray-300'>
                 Course Full Name
               </th>
+              <th className='px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase border-b border-gray-300'>
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -124,6 +157,28 @@ const AdminAllCourses = () => {
                 </td>
                 <td className='px-6 py-4 border-b border-gray-300'>
                   {teacher.courseName}
+                </td>
+                <td className='px-6 py-4 border-b border-gray-300'>
+                  <button
+                    className='bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600'
+                    onClick={() =>
+                      navigate(`/edit-course/${teacher._id}`, {
+                        state: {
+                          courseCode: teacher.courseCode,
+                          courseShortName: teacher.courseShortName,
+                          courseName: teacher.courseName,
+                        },
+                      })
+                    }
+                  >
+                    <AiFillEdit />
+                  </button>
+                  <button
+                    className='bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 ml-2'
+                    onClick={() => handleDelete(teacher._id)}
+                  >
+                    <AiFillDelete />
+                  </button>
                 </td>
               </tr>
             ))}

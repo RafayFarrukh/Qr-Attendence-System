@@ -11,43 +11,38 @@ const apiauth = require('../../middleware/apiAuth');
 router.post('/register/excel', apiauth, upload.single('file'), (req, res) => {
   try {
     const teacher = req.user;
-    console.log('xlsx  teacher eing hit');
+    console.log('xlsx teacher being hit');
     if (!req.file) {
       console.log('no file');
       return res.status(400).json({ message: 'No file uploaded' });
     }
     console.log(teacher);
-    // Read the uploaded Excel file
     if (teacher?.admin) {
-      // Read the uploaded Excel file
       const workbook = xlsx.readFile(req.file.path);
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-
-      // Convert the Excel data to JSON
       const teachersData = xlsx.utils.sheet_to_json(worksheet);
 
-      // Save each teacher to the database
-      const teachers = teachersData.map((teacherData) => {
-        // Create a new teacher object
+      const teacherPromises = teachersData.map(async (teacherData) => {
+        const existingTeacher = await Teacher.findOne({ email: teacherData.email });
 
-        const teacher = new Teacher({
+        if (existingTeacher) {
+          console.log(`Teacher with email ${teacherData.email} already exists. Skipping...`);
+          return null;
+        }
+
+        const newTeacher = new Teacher({
           fullName: teacherData.fullName,
           email: teacherData.email,
           password: teacherData.password,
           admin: teacherData.admin || false,
         });
 
-        // Save the teacher to the database
-        return teacher.save();
+        return newTeacher.save();
       });
 
-      // Wait for all the teacher saving promises to resolve
-      Promise.all(teachers)
+      Promise.all(teacherPromises)
         .then((savedTeachers) => {
-          // Filter out any null values (failed teacher saves)
-          const validTeachers = savedTeachers.filter(
-            (teacher) => teacher !== null,
-          );
+          const validTeachers = savedTeachers.filter((teacher) => teacher !== null);
 
           return res.status(200).json({
             message: 'Teachers registered successfully',
@@ -57,7 +52,7 @@ router.post('/register/excel', apiauth, upload.single('file'), (req, res) => {
         })
         .catch((error) => {
           console.error(error);
-          return res.status(500).json({ message: 'An Error Occured' });
+          return res.status(500).json({ message: 'An Error Occurred' });
         });
     } else {
       res.status(401).json({
@@ -66,9 +61,10 @@ router.post('/register/excel', apiauth, upload.single('file'), (req, res) => {
     }
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Same Teacher cant be inserted' });
+    return res.status(500).json({ message: 'An Error Occurred' });
   }
 });
+
 
 router.post('/register', async function (req, res, next) {
   const { fullName, email, password } = req.body;
@@ -111,11 +107,11 @@ router.post('/login', async function (req, res, next) {
   if (!teacher) {
     res.status(404).send({ error: 'User Dont Exists', success: false });
   } else {
-    const validPassword = await bcrypt.compare(
-      req.body.password,
-      teacher.password,
-    );
-    // const validPassword = req.body.password == teacher.password;
+    // const validPassword = await bcrypt.compare(
+    //   req.body.password,
+    //   teacher.password,
+    // );
+    const validPassword = req.body.password == teacher.password;
     if (!validPassword) {
       return res
         .status(404)

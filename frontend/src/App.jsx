@@ -29,6 +29,7 @@ import LoginModal from './Authentication/LoginModal';
 import Profile from './components/Teacher/Profile';
 import EditProfile from './components/Teacher/EditProfile';
 import OneAttendance from './components/Attendance/OneAttendance';
+import CourseEditPage from './components/Courses/CourseEdit';
 export const UserContext = createContext();
 function App() {
   const navigate = useNavigate();
@@ -80,7 +81,10 @@ function App() {
               {/* class */}
               <Route path='/createClass' element={<CreateClass />} />
               <Route path='/allClasses' element={<TotalClasses />} />
-              <Route path='/edit-class/:id' element={<AddStudents />} />
+              <Route
+                path='/edit-class/:id'
+                element={<AddStudents user={user} />}
+              />
               {/* teachher */}
               <Route path='/addTeachers' element={<AddTeacher />} />
               <Route path='/profile' element={<Profile />} />
@@ -94,6 +98,10 @@ function App() {
               <Route path='/createCourse' element={<CreateCourse />} />
               <Route path='/allcourses' element={<AllCourses />} />
               <Route path='/adminAllCourses' element={<AdminAllCourses />} />
+              <Route
+                path='/edit-course/:courseId'
+                element={<CourseEditPage />}
+              />
               <Route path='/onecourse/:id' element={<OneCourse />} />
               <Route
                 path='/takeAttendance'

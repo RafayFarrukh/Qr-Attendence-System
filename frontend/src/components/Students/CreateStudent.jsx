@@ -11,6 +11,10 @@ import * as Yup from 'yup';
 import BaseURL from '../../services/BaseURL';
 import { Formik, Field } from 'formik';
 import MaskedInput from 'react-input-mask';
+import { Tooltip } from 'react-tooltip';
+import { BsFillInfoCircleFill } from 'react-icons/bs';
+import 'react-tooltip/dist/react-tooltip.css';
+
 const validationSchema = Yup.object().shape({
   stdId: Yup.string()
     .required('Student ID is Required')
@@ -87,6 +91,25 @@ const CreateStudents = () => {
       <div className='flex shadow-lg items-center justify-center mt-4'>
         <div className='mr-2'>
           <div className='flex mb-4'>
+            <div className='tooltip-container'>
+              {/*                          
+                    <BsFillInfoCircleFill
+                      title='Excel Format: Column 1 - Student ID, Column 2 - Full Name, Column 3 - Email, Column 4 - Password'
+                      position='top'
+                      arrow
+                      theme='dark'
+                      interactive
+                      className='relative'
+                    >
+                      <span className='tooltip-icon flex items-center justify-center'>
+                        <Tooltip className='text-gray-500' />
+                      </span>
+                    </BsFillInfoCircleFill> */}
+
+              {/* <BsFillInfoCircleFill className="tooltip-icon" />
+                         
+                          <Tooltip place="top" type="dark" effect="solid" /> */}
+            </div>
             <input
               type='file'
               className='border border-gray-400 p-2 rounded-l-lg'
@@ -109,6 +132,20 @@ const CreateStudents = () => {
                 'Upload'
               )}
             </button>
+            <div className='ml-6'>
+              {/* <Tooltip
+                id='tooltip'
+                place='top'
+                type='dark'
+                effect='solid'
+                getContent={() =>
+                  'Excel Format: Column 1 - Student ID, Column 2 - Full Name, Column 3 - Email, Column 4 - Password'
+                }
+              />
+              <span data-tip data-for='tooltip'>
+                <BsFillInfoCircleFill className='tooltip-icon text-gray-500' />
+              </span> */}
+            </div>
           </div>
         </div>
       </div>
@@ -130,15 +167,18 @@ const CreateStudents = () => {
             stdId: values.stdId,
           });
           const allowedDomain = '@cuilahore.edu.pk';
-            if (!values.email.endsWith(allowedDomain)) {
-              toast.error('Only emails from @cuilahore.edu.pk domain are allowed.', {
-                  position: toast.POSITION.TOP_RIGHT,
-                  autoClose: 2000,
-                });
-              setLoading1(false);
-      
-      return;
-    }
+          if (!values.email.endsWith(allowedDomain)) {
+            toast.error(
+              'Only emails from @cuilahore.edu.pk domain are allowed.',
+              {
+                position: toast.POSITION.TOP_RIGHT,
+                autoClose: 2000,
+              },
+            );
+            setLoading1(false);
+
+            return;
+          }
           axios
             .post(`${BaseURL}/api/auth/student/register`, {
               stdId: values.stdId,
@@ -181,16 +221,16 @@ const CreateStudents = () => {
                         <PersonIcon className='h-6 w-6 text-gray-700' />
                         <span className='ml-2 mt-10 font-bold'>Student ID</span>
                         <Field
-                    name='stdId'
-                    render={({ field }) => (
-                      <MaskedInput
-                        {...field}
-                        mask='aa99-aaa-999'
-                        placeholder='Enter Student ID Here'
-                        className='border border-gray-300 p-3 rounded-lg w-full mt-3 focus:outline-none focus:border-gray-400'
-                      />
-                    )}
-                  />
+                          name='stdId'
+                          render={({ field }) => (
+                            <MaskedInput
+                              {...field}
+                              mask='aa99-aaa-999'
+                              placeholder='Enter Student ID Here'
+                              className='border border-gray-300 p-3 rounded-lg w-full mt-3 focus:outline-none focus:border-gray-400'
+                            />
+                          )}
+                        />
                       </label>
                       {touched.stdId && errors.stdId ? (
                         <small>{errors.stdId}</small>

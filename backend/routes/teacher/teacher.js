@@ -58,4 +58,28 @@ router.patch('/updatePassword', async (req, res) => {
   }
 });
 
+router.patch('/teacher/:teacherId/makeAdmin', async (req, res) => {
+  try {
+    const teacherId = req.params.teacherId;
+    console.log(teacherId);
+    // Find the teacher by ID
+    const teacher = await Teacher.findById(teacherId);
+
+    if (!teacher) {
+      return res.status(404).json({ message: 'Teacher not found' });
+    }
+
+    // Update the teacher's admin status
+    teacher.admin = true;
+
+    // Save the updated teacher
+    await teacher.save();
+
+    return res.status(200).json({ message: 'Teacher successfully made admin' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 module.exports = router;

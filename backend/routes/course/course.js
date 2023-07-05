@@ -11,52 +11,53 @@ const upload = multer({ dest: 'uploads/' });
 // Read the uploaded Excel file and save courses to the database
 router.post('/register/excel', upload.single('file'), (req, res) => {
   try {
-    const teacher = req.user;
-    // Read the uploaded Excel file
-    if (teacher?.admin) {
-      const workbook = xlsx.readFile(req.file.path);
-      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-
-      // Convert the Excel data to JSON
-      const coursesData = xlsx.utils.sheet_to_json(worksheet);
-
-      // Save each course to the database
-      const courses = coursesData.map((courseData) => {
-        // Create a new course object
-        const course = new Course({
-          courseCode: courseData.courseCode,
-          courseShortName: courseData.courseShortName,
-          courseName: courseData.courseName,
-        });
-
-        // Save the course to the database
-        return course.save();
-      });
-
-      // Wait for all the course saving promises to resolve
-      Promise.all(courses)
-        .then((savedCourses) => {
-          // Filter out any null values (failed course saves)
-          const validCourses = savedCourses.filter((course) => course !== null);
-
-          return res.status(200).json({
-            message: 'Courses registered successfully',
-            courses: validCourses,
-            success: true,
-          });
-        })
-        .catch((error) => {
-          console.error(error);
-          return res.status(500).json({ message: 'Internal server error' });
-        });
-    } else {
-      res.status(401).json({
-        message: 'You are not authorized for this action',
-      });
+    console.log('Excel registration being hit');
+    if (!req.file) {
+      console.log('No file');
+      return res.status(400).json({ message: 'No file uploaded' });
     }
+    const workbook = xlsx.readFile(req.file.path);
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    const coursesData = xlsx.utils.sheet_to_json(worksheet);
+
+    const coursePromises = coursesData.map(async (courseData) => {
+      const existingCourse = await Course.findOne({
+        courseCode: courseData.courseCode,
+      });
+
+      if (existingCourse) {
+        console.log(
+          `Course with code ${courseData.courseCode} already exists. Skipping...`,
+        );
+        return null;
+      }
+
+      const newCourse = new Course({
+        courseCode: courseData.courseCode,
+        courseShortName: courseData.courseShortName,
+        courseName: courseData.courseName,
+      });
+
+      return newCourse.save();
+    });
+
+    Promise.all(coursePromises)
+      .then((savedCourses) => {
+        const validCourses = savedCourses.filter((course) => course !== null);
+
+        return res.status(200).json({
+          message: 'Courses registered successfully',
+          courses: validCourses,
+          success: true,
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        return res.status(500).json({ message: 'Invalid Excel Sheet Format' });
+      });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ message: 'Invalid Excel Sheet Format' });
   }
 });
 
@@ -213,4 +214,56 @@ router.get('/search', async (req, res) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+router.patch('/course/:id', async (req, res) => {
+  try {
+    console.log('we are here');
+    const courseId = req.params.id;
+    const { courseCode, courseShortName, courseName } = req.body;
+    console.log(req.body);
+    // Find the course by ID
+    const course = await Course.findById(courseId);
+
+    if (!course) {
+      return res.status(404).json({ message: 'Course not found' });
+    }
+
+    // Update the course fields
+    course.courseCode = courseCode;
+    course.courseShortName = courseShortName;
+    course.courseName = courseName;
+
+    // Save the updated course
+    const updatedCourse = await course.save();
+
+    res.status(200).json({
+      message: 'Course updated successfully',
+      course: updatedCourse,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+router.delete('/delete/:courseId', async (req, res) => {
+  try {
+    const { courseId } = req.params;
+
+    // Find the course by its ID
+    const course = await Course.findById(courseId);
+
+    if (!course) {
+      return res.status(404).json({ message: 'Course not found' });
+    }
+
+    // Delete the course from the database
+    await course.remove();
+
+    return res.status(200).json({ message: 'Course deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 module.exports = router;

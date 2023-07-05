@@ -5,8 +5,9 @@ import baseURL from '../../services/BaseURL';
 import { useLocation } from 'react-router-dom';
 import * as Loader from 'react-loader-spinner';
 import { toast } from 'react-toastify';
+import { BsFillTrashFill } from 'react-icons/bs';
 
-function AddStudentsToClass() {
+function AddStudentsToClass(user) {
   const location = useLocation();
   const classId = location.pathname.split('/')[2];
   const [username, setUsername] = useState('');
@@ -14,6 +15,7 @@ function AddStudentsToClass() {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loading1, setLoading1] = useState(false);
+  const [loadingRemove, setLoadingRemove] = useState(false);
 
   const handleAddStudents = async (event) => {
     event.preventDefault();
@@ -61,6 +63,8 @@ function AddStudentsToClass() {
       setStudents(response.data.foundStudents);
       setLoading1(false);
     } catch (error) {
+      setLoading1(false);
+
       console.error(error);
     }
   };
@@ -68,6 +72,27 @@ function AddStudentsToClass() {
   useEffect(() => {
     fetchStudents();
   }, []); // Fetch students on component mount
+  const handleRemoveStudent = async (studentId) => {
+    try {
+      setLoadingRemove(true);
+      await axiosInstance.delete(
+        `${baseURL}/api/class/teacher/class/${classId}/student/${studentId}`,
+      );
+      toast.success('Student removed from class', {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 1000,
+      });
+      fetchStudents(); // Refresh the student list
+      setLoadingRemove(false);
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to remove student from class', {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 1000,
+      });
+      setLoadingRemove(false);
+    }
+  };
   return (
     <div className='flex justify-center mt-10'>
       <form
@@ -152,6 +177,24 @@ function AddStudentsToClass() {
                   </td>
                   <td className='border border-gray-400 p-2'>
                     {student.email}
+                  </td>
+                  <td className='border border-gray-400 p-2'>
+                    <button
+                      className='flex items-center justify-center text-red-500 hover:text-red-700'
+                      onClick={() => handleRemoveStudent(student._id)}
+                      // disabled={loadingRemove}
+                    >
+                      {/* {loadingRemove ? (
+                        <Loader.TailSpin
+                          type='ThreeDots'
+                          color='black'
+                          height={20}
+                          width={20}
+                        />
+                      ) : ( */}
+                      <BsFillTrashFill />
+                      {/* )} */}
+                    </button>
                   </td>
                 </tr>
               ))

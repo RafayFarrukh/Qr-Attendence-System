@@ -3,12 +3,14 @@ import axios from 'axios';
 import baseURL from '../../services/BaseURL';
 import * as Loader from 'react-loader-spinner';
 import { ImUserTie } from 'react-icons/im';
-import { Typography } from '@mui/material';
+import { Typography, Button } from '@mui/material';
+import axiosInstance from '../../services/axiosInstance';
 const AllTeachers = () => {
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [error, setError] = useState('');
+
   useEffect(() => {
     fetchTeachers();
   }, []);
@@ -28,33 +30,36 @@ const AllTeachers = () => {
   const handleSearch = async () => {
     try {
       setLoading(true);
-      const response = await axios
-        .get(`${baseURL}/api/auth/teacher/search`, {
-          params: { teacher: searchQuery },
-        })
-        .then((res) => {
-          setTeachers(res.data.teachers);
-          setError('');
-          console.log(res, 'res');
-        })
-        .catch((e) => {
-          console.log(e, 'ee');
-          setTeachers([]);
-          setError(e.response.data.message);
-        });
-
+      const response = await axios.get(`${baseURL}/api/auth/teacher/search`, {
+        params: { teacher: searchQuery },
+      });
       setTeachers(response.data.teachers);
+      setError('');
       setLoading(false);
     } catch (error) {
       setLoading(false);
+      setTeachers([]);
+      setError(error.response.data.message);
+    }
+  };
+
+  const handleMakeAdmin = async (teacherId) => {
+    try {
+      await axiosInstance.patch(
+        `${baseURL}/api/teacher/teacher/${teacherId}/makeAdmin`,
+      );
+      fetchTeachers();
+    } catch (error) {
       console.error(error);
     }
   };
+
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSearch();
     }
   };
+
   return (
     <div className='container mx-auto mt-10'>
       <div className='flex items-center'>
@@ -80,58 +85,72 @@ const AllTeachers = () => {
         </div>
       </div>
       {loading ? (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '400px',
-          }}
-        >
+        <div className='flex justify-center items-center h-40'>
           <Loader.TailSpin
             type='ThreeDots'
             color='black'
-            height={150}
-            width={150}
+            height={50}
+            width={50}
           />
         </div>
       ) : (
-        <table className='min-w-full bg-white border border-gray-300'>
-          <thead>
-            <tr>
-              <th className='px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase border-b border-gray-300'>
-                Full Name
-              </th>
-              <th className='px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase border-b border-gray-300'>
-                Email
-              </th>
-              <th className='px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase border-b border-gray-300'>
-                Admin
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {teachers.map((teacher) => (
-              <tr key={teacher._id}>
-                <td className='px-6 py-4 border-b border-gray-300'>
-                  {teacher.fullName}
-                </td>
-                <td className='px-6 py-4 border-b border-gray-300'>
-                  {teacher.email}
-                </td>
-                <td className='px-6 py-4 border-b border-gray-300'>
-                  {teacher.admin ? 'Yes' : 'No'}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <>
+          {teachers.length === 0 ? (
+            <Typography variant='body1' sx={{ mt: 2 }}>
+              No teachers found.
+            </Typography>
+          ) : (
+            <table className='min-w-full bg-white border border-gray-300'>
+              <thead>
+                <tr>
+                  <th className='px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase border-b border-gray-300'>
+                    Full Name
+                  </th>
+                  <th className='px-6 py4 border-b border-gray-300'>Email</th>
+                  <th className='px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase border-b border-gray-300'>
+                    Admin
+                  </th>
+                  <th className='px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase border-b border-gray-300'>
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {teachers.map((teacher) => (
+                  <tr key={teacher._id}>
+                    <td className='px-6 py-4 border-b border-gray-300'>
+                      {teacher.fullName}
+                    </td>
+                    <td className='px-6 py-4 border-b border-gray-300'>
+                      {teacher.email}
+                    </td>
+                    <td className='px-6 py-4 border-b border-gray-300'>
+                      {teacher.admin ? 'Yes' : 'No'}
+                    </td>
+                    <td className='px-6 py-4 border-b border-gray-300'>
+                      {!teacher.admin && (
+                        <Button
+                          variant='contained'
+                          color='primary'
+                          size='small'
+                          onClick={() => handleMakeAdmin(teacher._id)}
+                        >
+                          Make Admin
+                        </Button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </>
       )}
       {error && (
         <Typography
           variant='body2'
           color='error'
-          sx={{ mt: '1rem', textAlign: 'left', fontSize: '1rem', ml: '1rem' }}
+          sx={{ mt: '1rem', textAlign: 'left' }}
         >
           {error}
         </Typography>

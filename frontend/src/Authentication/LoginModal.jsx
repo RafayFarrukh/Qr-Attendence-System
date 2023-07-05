@@ -211,7 +211,7 @@ const LoginModal = ({ open, onClose }) => {
               {error}
             </Typography>
           )}
-          <ForgotPassword variant='body2'>Forgot Password?</ForgotPassword>
+          {/* <ForgotPassword variant='body2'>Forgot Password?</ForgotPassword> */}
         </Form>
       </ModalContainer>
     </Modal>

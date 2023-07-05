@@ -96,6 +96,42 @@ router.post('/addClass', async function (req, res, next) {
   }
 });
 
+router.delete('/class/:classId/student/:studentId', async (req, res) => {
+  try {
+    const classId = req.params.classId;
+    const studentId = req.params.studentId;
+    console.log(studentId, classId);
+    // Find the class by ID
+    const classObj = await Class.findById(classId);
+
+    if (!classObj) {
+      return res.status(404).json({ message: 'Class not found' });
+    }
+
+    // Check if the student is enrolled in the class
+    const studentIndex = classObj.students.findIndex(
+      (student) => student._id.toString() === studentId,
+    );
+
+    if (studentIndex === -1) {
+      return res
+        .status(404)
+        .json({ message: 'Student not found in the class' });
+    }
+
+    // Remove the student from the class
+    classObj.students.splice(studentIndex, 1);
+
+    // Save the updated class
+    await classObj.save();
+
+    return res.status(200).json({ message: 'Student removed from the class' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 router.post('/addStudents/:id', async function (req, res, next) {
   try {
     const teacher = req.user;
